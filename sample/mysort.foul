@@ -1,0 +1,44 @@
+lt(Z, S(y))    = T
+lt(x, Z)       = F
+lt(S(x), S(y)) = lt(x, y)
+
+cond(T, t, f) = t
+cond(F, t, f) = f
+
+merge(Nil, ys) = ys
+merge(xs, Nil) = xs
+merge(Cons(x, xs), Cons(y, ys)) =
+  cond(lt(x, y), Cons(x, merge(xs, Cons(y, ys))),
+                 Cons(y, merge(Cons(x, xs), ys)))
+
+twistin(x, Empty)       = Leaf(x)
+twistin(x, Leaf(y))     = Node(Leaf(x), Leaf(y))
+twistin(x, Node(a, b))  = Node(twistin(x, b), a)
+
+deal(Nil)          = Empty
+deal(Cons(x, xs))  = twistin(x, deal(xs))
+
+mergetree(Empty)      = Nil
+mergetree(Leaf(x))    = Cons(x, Nil)
+mergetree(Node(a, b)) = merge(mergetree(a), mergetree(b))
+
+sort(xs) = mergetree(deal(xs))
+
+two() = S(S(Z))
+three() = S(two())
+four() = S(three())
+five() = S(four())
+six() = S(five())
+seven() = S(six())
+eight() = S(seven())
+
+main() = sort(Cons(four(),
+              Cons(seven(),
+              Cons(Z,
+              Cons(eight(),
+              Cons(two(),
+              Cons(five(),
+              Cons(three(),
+              Cons(six(),
+              Cons(S(Z),
+              Nil))))))))) )

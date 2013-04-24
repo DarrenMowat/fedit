@@ -1,0 +1,5 @@
+
+add(Z, S(y))    = T
+lt(x, Z)       = F
+lt(S(x), S(y)) = lt(x, y)
+

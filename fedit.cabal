@@ -24,6 +24,8 @@ executable fedit
                      process ==1.1.*,
                      split > 0
   other-modules:     Fedit
+                     FOUL.FOULLang
                      FOUL.Interpreter
                      FOUL.Language
                      FOUL.Parser
+                     FOUL.TypeChecker
