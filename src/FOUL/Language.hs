@@ -15,9 +15,10 @@ A function line has a bunch of patterns on the left, and an expression
 to evaluate if those patterns match the function's inputs.
 -}
 
-type Line = ([Pat], Expr)
+-- type Line = ([Pat], Expr)
 
--- data Line = Comment String | Line ([Pat], Expr)
+data Line = Line [Pat] Expr | Comment String | Empty deriving (Show, Eq)
+
 
 
 {-******************************************************************-}
@@ -68,7 +69,7 @@ type VName = String
 data Pat
   =  PV VName
   |  PC CName [Pat]
-  deriving Show
+  deriving (Show, Eq)
 
 {-
 We can try to figure out if a value matches a pattern. If so, we can
@@ -106,7 +107,7 @@ data Expr
   = EC CName [Expr]   -- just like values
   | EV VName          -- from variables (coming from patterns)
   | EA FName [Expr]   -- by applying functions (from the program)
-  deriving Show
+  deriving (Show, Eq)
 
 {-
 We'd better check that we can make constant expressions from values.
@@ -126,7 +127,9 @@ eval fs gam (EV x)     = fetch x gam
 eval fs gam (EA f es)  = runfun (fetch f fs) (map (eval fs gam) es)
   where
     runfun :: [Line] -> [Val] -> Val
-    runfun ((ps, e) : ls) vs = case matches ps vs of
+    runfun ((Comment _) : ls) vs = runfun ls vs
+    runfun (Empty : ls) vs = runfun ls vs
+    runfun ((Line ps e) : ls) vs = case matches ps vs of
       Nothing    -> runfun ls vs
       Just gam'  -> eval fs gam' e
 

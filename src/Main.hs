@@ -16,6 +16,9 @@ main = do
 
 parseProgram :: String -> IO ()
 parseProgram contents = do
+  putStrLn "****** Start Program ******"
+  putStrLn contents
+  putStrLn "****** End Program ******"
   case parseAndEval contents of
     Left err -> putStrLn $ "ERROR: " ++ err
-    Right suc -> putStrLn $ "SUCCSESS: " ++ suc
+    Right suc -> putStrLn $ "SUCCSESS: " ++ (show suc)
