@@ -1,3 +1,6 @@
+
+-- Functions that deal with sorting lists of numbers
+
 lt(Z, S(y))    = T
 lt(x, Z)       = F
 lt(S(x), S(y)) = lt(x, y)
@@ -32,6 +35,7 @@ six() = S(five())
 seven() = S(six())
 eight() = S(seven())
 
+-- Main test point
 main() = sort(Cons(four(),
               Cons(seven(),
               Cons(Z,

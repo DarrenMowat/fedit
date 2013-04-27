@@ -12,17 +12,13 @@ import Text.Parsec.Language (haskellStyle)
 import Data.Char
 
 {-
-	
   Parser is tasked with taking a string of program text and turning into 
 	FOUL Intermediate Language, which can then be interpreted by the 
 	Interpreter module.
 
-  This is based on Prac4.hs but I've replaced the Parser with Parsec as
+  This is loosely based on Prac4.hs but I've replaced the Parser with Parsec as
   I've had a bit of experience using it and its pretty cool.
-
 -}
-
-
 
 run :: Show a => Parser a -> String -> IO ()
 run p input = case (parse p "run" input) of
@@ -39,19 +35,19 @@ applicator :: Parser String
 applicator = (:) <$> lower <*> many alphaNum <?> "an applicator"
 
 constructor :: Parser String
-constructor = (:) <$> upper <*> many alphaNum <?> "Expected an constructor"
+constructor = (:) <$> upper <*> many alphaNum <?> "an constructor"
 
 inParenthesis :: Parser a -> Parser a
-inParenthesis p = between (spaces >> string "(") (spaces >> string ")") p <?> "Expected parenthesis"
+inParenthesis p = between (spaces >> string "(") (spaces >> string ")") p <?> "parenthesis"
 
 commaSep :: Parser a -> Parser [a]
-commaSep p = sepBy (spaces >> p <* spaces) (char ',') <?> "Expected comma seperated list" -- The second half of this could ignore everything until it reaches ,
+commaSep p = sepBy (spaces >> p <* spaces) (char ',') <?> "comma seperated list" -- The second half of this could ignore everything until it reaches ,
 
 parenList :: Parser a -> Parser [a]
-parenList p = spaces >> inParenthesis (commaSep p) <?> "Expected comma seperated list in parenthesis"
+parenList p = spaces >> inParenthesis (commaSep p) <?> "comma seperated list in parenthesis"
 
 integer :: Parser Integer
-integer = (read :: String -> Integer) <$> many1 digit <?> "Expected an integer"
+integer = (read :: String -> Integer) <$> many1 digit <?> "an integer"
 
 keywordImport :: Parser ()
 keywordImport  = try (do{ string "import" 
@@ -119,6 +115,8 @@ spcPat n   = PC n []
 parseLine :: Parser Line
 parseLine = spaces >> choice [try parseCommentLine, try parseExpressionLine]
 
+parseGunk :: Parser () 
+
 parseCommentLine :: Parser Line
 parseCommentLine = string "--" >> Comment <$> manyTill anyChar (try newline) 
 
@@ -149,8 +147,11 @@ parseProgram prog = case parse parseProg "ParseProgram" prog of
   Left err -> Left ((show err) ++ " -> " ++ (show $ errorPos err)) 
   Right x -> Right (collateFunctions x [])
 
-
-
-
+{-
+  Post Parsers are used to pick up common errors that can easily be picked up here
+  1) Calling functions with wrong number of variables
+  2) Declaring functions with diffrent bumber of variables
+  3) Calling non-existant functions
+-}
 
 

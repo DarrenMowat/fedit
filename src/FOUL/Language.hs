@@ -13,12 +13,10 @@ type Prog = [(FName, [Line])]
 {-
 A function line has a bunch of patterns on the left, and an expression
 to evaluate if those patterns match the function's inputs.
+  Lines can also be comments or empty
 -}
 
--- type Line = ([Pat], Expr)
-
 data Line = Line [Pat] Expr | Comment String | Empty deriving (Show, Eq)
-
 
 
 {-******************************************************************-}
@@ -28,33 +26,6 @@ data Line = Line [Pat] Expr | Comment String | Empty deriving (Show, Eq)
 type CName = String
 data Val = VC CName [Val]  -- a constructor with 0 or more subvalues
   deriving (Show, Eq)
-
-true :: Val
-true = VC "True" []
-
-false :: Val
-false = VC "False" []
-
-zero :: Val
-zero = VC "Zero" []  -- zero has no subvalues
-
-suc :: Val -> Val
-suc n = VC "Suc" [n]
-
-nil :: Val
-nil = VC "[]" []
-
-cons :: Val -> Val -> Val
-cons x xs = VC ":" [x, xs]
-
-pair :: Val -> Val -> Val
-pair a b = VC "Pair" [a, b]
-
-leaf :: Val
-leaf = VC "Leaf" []
-
-node :: Val -> Val -> Val -> Val
-node left label right = VC "Node" [left, label, right]
 
 {-******************************************************************-}
 {- FOUL Patterns                                                    -}
@@ -101,17 +72,11 @@ matches _ _ = Nothing
 {- FOUL Expressions                                                 -}
 {-******************************************************************-}
 
-{- Expressions are built as follows -}
-
 data Expr
   = EC CName [Expr]   -- just like values
   | EV VName          -- from variables (coming from patterns)
   | EA FName [Expr]   -- by applying functions (from the program)
   deriving (Show, Eq)
-
-{-
-We'd better check that we can make constant expressions from values.
--}
 
 constant :: Val -> Expr
 constant (VC c vs) = EC c (map constant vs)

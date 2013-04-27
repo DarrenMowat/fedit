@@ -19,6 +19,8 @@ parseProgram contents = do
   putStrLn "****** Start Program ******"
   putStrLn contents
   putStrLn "****** End Program ******"
-  case parseAndEval contents of
+  case parseToFoul contents of
     Left err -> putStrLn $ "ERROR: " ++ err
-    Right suc -> putStrLn $ "SUCCSESS: " ++ (show suc)
+    Right prog -> do 
+    	putStrLn $ "Parsed: " ++ (show prog)
+    	putStrLn $ "Eval Main: " ++ (show (evalMain prog)) 

@@ -3,6 +3,12 @@ module FOUL.FOULLang where
 import FOUL.Language
 import FOUL.Parser
 
-parseAndEval :: String -> Either String Prog
-parseAndEval []    = Left "Empty Input"
-parseAndEval input = parseProgram input
+parseToFoul :: String -> Either String Prog
+parseToFoul []    = Left "Empty Input"
+parseToFoul input = parseProgram input
+
+evalMain :: Prog -> Val
+evalMain prog = evalExpr prog (EA "main" [])
+
+evalExpr :: Prog -> Expr -> Val 
+evalExpr p e = eval p [] e
