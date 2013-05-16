@@ -1,6 +1,8 @@
 
 -- Math Standard Library
--- Can be imported via 'import std.math'
+-- Can be imported via 'import std/math'
+
+import std/bool
 
 -- Addition
 add(Z, Z)       = Z
@@ -21,17 +23,33 @@ mul(x, Z)       = Z
 mul(Z, y)       = Z
 mul(x, S(y))    = add(x, mul(x, y))
 
--- Division
+-- Division a / b a, b
+div(Z, Z)       = Z
+div(x, Z)       = Z 
+div(Z, x)       = Z
+div(n, d)       = cond (lt(n, d), Z, S(div(sub(n, d), d)))
+
 
 -- Less Than
 lt(Z, S(y))    = T
 lt(x, Z)       = F
 lt(S(x), S(y)) = lt(x, y)
 
+-- Less Than Or Equal To
+lte(x, y) = or(lt(x, y), eq(x, y))
+
 -- More Than
 mt(S(y), Z)    = T
 mt(Z, x)       = F
-mt(S(x), S(y)) = mt(x, y)
+mt(S(x), S(y)) = mte(x, y)
+
+-- Less Than Or Equal To
+mte(x, y) = or(mt(x, y), eq(x, y))
+
+-- Number Equality 
+eq(Z, Z) = T 
+eq(S(x), S(y)) = eq(x, y)
+eq(x, y)       = F
 
 -- Square
 square(x) = mul(x, x)

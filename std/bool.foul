@@ -1,6 +1,15 @@
 
 -- Boolean Standard Library
--- Can be imported via 'import std.bool'
+-- Can be imported via 'import std/bool'
 
 cond(T, t, f) = t
 cond(F, t, f) = f
+
+and(T, T) = T
+and(a, b) = F
+
+or(F, F) = F
+or(a, b) = T
+
+not(T) = F
+not(F) = T
