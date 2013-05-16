@@ -2,8 +2,6 @@
 -- Math Standard Library
 -- Can be imported via 'import std.math'
 
-import std/bool
-
 -- Addition
 add(Z, Z)       = Z
 add(x, Z)       = x
