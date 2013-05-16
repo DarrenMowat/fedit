@@ -1,2 +1,0 @@
-module FOUL.TypeChecker where
-	

@@ -5,11 +5,9 @@ import FOUL.Language
 import Control.Monad
 import Control.Applicative hiding (many, optional, (<|>))
 import Text.Parsec hiding (Line, Empty)
-import Text.Parsec.String (Parser) -- type Parser = Parsec String ()
-import Text.Parsec.Expr
-import qualified Text.Parsec.Token as P
-import Text.Parsec.Language (haskellStyle)
+import Text.Parsec.String (Parser)
 import Data.Char
+import Data.List
 
 {-
   Parser is tasked with taking a string of program text and turning into 
@@ -19,14 +17,6 @@ import Data.Char
   This is loosely based on Prac4.hs but I've replaced the Parser with Parsec as
   I've had a bit of experience using it and its pretty cool.
 -}
-
-run :: Show a => Parser a -> String -> IO ()
-run p input = case (parse p "run" input) of
-  Left err -> do 
-    putStr "parse error at " 
-    print err
-    print $ errorPos err
-  Right x -> print x
 
 variable :: Parser String
 variable = (:) <$> lower <*> many alphaNum <?> "a variable"
@@ -115,8 +105,6 @@ spcPat n   = PC n []
 parseLine :: Parser Line
 parseLine = spaces >> choice [try parseCommentLine, try parseExpressionLine]
 
-parseGunk :: Parser () 
-
 parseCommentLine :: Parser Line
 parseCommentLine = string "--" >> Comment <$> manyTill anyChar (try newline) 
 
@@ -142,16 +130,22 @@ insertFunction (fname, lns) ((fname2, lns2):xs) = if fname == fname2
                                                     then ((fname2, (lns2 ++ lns)) : xs)
                                                   else [(fname2, lns2)] ++ insertFunction (fname, lns) xs
 
+strip :: String -> String 
+strip s = unlines $ clearLine "--" $ clearLine "import " $ lines s
+
+clearLine :: String -> [String] -> [String]
+clearLine _ []     = [] 
+clearLine y (x:xs) = case isPrefixOf y x of 
+  True  -> "" : clearLine y xs
+  False -> x : clearLine y xs
+
 parseProgram :: String -> Either String Prog
-parseProgram prog = case parse parseProg "ParseProgram" prog of 
+parseProgram prog = case parse parseProg "ParseProgram" (strip prog) of 
   Left err -> Left ((show err) ++ " -> " ++ (show $ errorPos err)) 
   Right x -> Right (collateFunctions x [])
 
-{-
-  Post Parsers are used to pick up common errors that can easily be picked up here
-  1) Calling functions with wrong number of variables
-  2) Declaring functions with diffrent bumber of variables
-  3) Calling non-existant functions
--}
-
-
+getImports :: [String] -> [String] 
+getImports []     = []
+getImports (x:xs) = case stripPrefix "import " x of 
+  Just x  -> x : getImports xs
+  Nothing -> getImports xs

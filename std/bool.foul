@@ -1,0 +1,8 @@
+
+-- Boolean Standard Library
+-- Can be imported via 'import std.bool'
+
+import std/math
+
+cond(T, t, f) = t
+cond(F, t, f) = f

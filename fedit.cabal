@@ -13,6 +13,9 @@ maintainer:          darren.mowat@strath.ac.uk
 -- category:            
 build-type:          Simple
 cabal-version:       >=1.8
+-- Standard Library Files
+Data-Files:          std/bool.foul
+                     std/math.foul
 
 executable fedit
   main-is:           Main.hs
@@ -22,9 +25,13 @@ executable fedit
                      directory ==1.2.*,
                      parsec ==3.1.*,
                      process ==1.1.*,
-                     split > 0
+                     split > 0,
+                     MonadRandom ==0.1.8,
+                     mtl >=2 && < 3  
   other-modules:     Fedit
                      FOUL.FOULLang
+                     FOUL.ImportResolver
                      FOUL.Language
                      FOUL.Parser
-                     FOUL.TypeChecker
+                     Util.FileUtils
+                     Util.ListUtils

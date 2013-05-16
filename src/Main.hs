@@ -10,17 +10,13 @@ main = do
   args <- getArgs
   case args of 
   	[] -> putStrLn "No input specified"
-  	xs -> do 
-  		contents <- readFile $ concat xs
-  		parseProgram contents
+  	xs -> parseProgram $ concat xs
 
-parseProgram :: String -> IO ()
-parseProgram contents = do
-  putStrLn "****** Start Program ******"
-  putStrLn contents
-  putStrLn "****** End Program ******"
-  case parseToFoul contents of
+parseProgram :: FilePath -> IO ()
+parseProgram file = do
+  res <- parseToFoul file
+  case res of
     Left err -> putStrLn $ "ERROR: " ++ err
     Right prog -> do 
-    	putStrLn $ "Parsed: " ++ (show prog)
-    	putStrLn $ "Eval Main: " ++ (show (evalMain prog)) 
+      putStrLn $ "Parsed: " ++ (show prog)
+

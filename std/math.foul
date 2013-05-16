@@ -1,0 +1,39 @@
+
+-- Math Standard Library
+-- Can be imported via 'import std.math'
+
+import std/bool
+
+-- Addition
+add(Z, Z)       = Z
+add(x, Z)       = x
+add(Z, y)       = y
+add(S(x), S(y)) = S(S(add(x, y)))
+
+-- Subtraction
+-- Note: We don't support negative numbers. Z is returned if answer is negative
+sub(Z, Z)       = Z
+sub(x, Z)       = x
+sub(Z, y)       = Z
+sub(S(x), S(y)) = sub(x, y)
+
+-- Multiplcation
+mul(Z, Z)       = Z
+mul(x, Z)       = Z
+mul(Z, y)       = Z
+mul(x, S(y))    = add(x, mul(x, y))
+
+-- Division
+
+-- Less Than
+lt(Z, S(y))    = T
+lt(x, Z)       = F
+lt(S(x), S(y)) = lt(x, y)
+
+-- More Than
+mt(S(y), Z)    = T
+mt(Z, x)       = F
+mt(S(x), S(y)) = mt(x, y)
+
+-- Square
+square(x) = mult(x, x)
