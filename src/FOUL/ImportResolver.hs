@@ -3,6 +3,7 @@ module FOUL.ImportResolver where
 import FOUL.Parser
 import Util.FileUtils (splitPath)
 import Util.ListUtils (trimString)
+import Util.EitherUtils
 import System.FilePath ((</>))
 import Data.List (isSuffixOf, intercalate)
 import Paths_fedit (getDataFileName)
@@ -31,18 +32,9 @@ makeImportTree past root = do
       [] -> return $ Right (Leaf (root, contents))
       otherwise -> do
         mfs <- mapM (makeImportTree (root : past)) ifs
-        case collateErrors mfs of 
-          [] -> return (Right (Branch (root, contents) (collateBranches mfs)))
-          es -> return (Left (intercalate ", " es))
-
-collateErrors :: [Either String ImportTree] -> [String]
-collateErrors [] = [] 
-collateErrors ((Left e) : es) = e : collateErrors es
-collateErrors (e : es)        = collateErrors es
-
-collateBranches :: [Either String ImportTree] -> [ImportTree]
-collateBranches [] = [] 
-collateBranches ((Right i) : is) = i : collateBranches is
+        case hasLeft mfs of 
+          True  -> return $ Left (intercalate "," (collateLeft mfs)) 
+          False -> return (Right (Branch (root, contents) (collateRight mfs)))
 
 getImportPath :: FilePath -> String -> IO FilePath
 getImportPath root name = case lookup (trimString name) stdLib of 

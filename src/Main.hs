@@ -19,4 +19,5 @@ parseProgram file = do
     Left err -> putStrLn $ "ERROR: " ++ err
     Right prog -> do 
       putStrLn $ "Parsed: " ++ (show prog)
+      putStrLn $ "Evaluated: " ++ (show $ evalMain prog)
 

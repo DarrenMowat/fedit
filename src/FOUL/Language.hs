@@ -101,7 +101,7 @@ eval fs gam (EA f es)  = runfun (fetch f fs) (map (eval fs gam) es)
 {- We need that looker-upper function. -}
 
 fetch :: String -> [(String, x)] -> x
-fetch _ [] = undefined -- Need a way to throw an error that x is undefined in the program file. Could be an undefined program etc. Either x String, Maybe x, the caller can then propogate the message
+fetch x [] = trace ("Couldn't fetch " ++ x) undefined -- Need a way to throw an error that x is undefined in the program file. Could be an undefined program etc. Either x String, Maybe x, the caller can then propogate the message
 fetch x ((y, v) : gam)
   | x == y     = v
   | otherwise  = fetch x gam

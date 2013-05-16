@@ -34,4 +34,4 @@ mt(Z, x)       = F
 mt(S(x), S(y)) = mt(x, y)
 
 -- Square
-square(x) = mult(x, x)
+square(x) = mul(x, x)

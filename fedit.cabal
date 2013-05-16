@@ -33,5 +33,6 @@ executable fedit
                      FOUL.ImportResolver
                      FOUL.Language
                      FOUL.Parser
+                     Util.EitherUtils
                      Util.FileUtils
                      Util.ListUtils

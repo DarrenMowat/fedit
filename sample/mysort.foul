@@ -3,7 +3,6 @@
 
 import std/bool
 import std/math
-import mymath
 
 merge(Nil, ys) = ys
 merge(xs, Nil) = xs
