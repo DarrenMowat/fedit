@@ -11,11 +11,11 @@ import Data.List
 
 {-
   Parser is tasked with taking a string of program text and turning into 
-	FOUL Intermediate Language, which can then be interpreted by the 
+	FOUL Language, which can then be interpreted by the 
 	Interpreter module.
 
   This is loosely based on Prac4.hs but I've replaced the Parser with Parsec as
-  I've had a bit of experience using it and its pretty cool.
+  I've had a bit of experience using it and it has a cool name.
 -}
 
 variable :: Parser String
@@ -39,12 +39,7 @@ parenList p = spaces >> inParenthesis (commaSep p) <?> "comma seperated list in 
 integer :: Parser Integer
 integer = (read :: String -> Integer) <$> many1 digit <?> "an integer"
 
-keywordImport :: Parser ()
-keywordImport  = try (do{ string "import" 
-                       ; notFollowedBy alphaNum
-                       }) <?> "Expected import keyword"
-
-{--- remember
+{--- 
 data Expr
   = EC String [Expr]  -- should look like    Con(e1,...,en)
   | EV String        -- should look like    x
@@ -99,14 +94,11 @@ spcPat "F" = PC "False" []
 spcPat n   = PC n []
 
 {-
-  data Line = Line [Pat] Expr | Comment String | Empty
+  data Line = Line [Pat] Expr
 -}
 
 parseLine :: Parser Line
-parseLine = spaces >> choice [try parseCommentLine, try parseExpressionLine]
-
-parseCommentLine :: Parser Line
-parseCommentLine = string "--" >> Comment <$> manyTill anyChar (try newline) 
+parseLine = spaces >> parseExpressionLine
 
 parseExpressionLine :: Parser Line
 parseExpressionLine =  Line <$> parenList parsePat  <* spaces <* char '=' <* spaces <*> parseExpr
@@ -130,6 +122,8 @@ insertFunction (fname, lns) ((fname2, lns2):xs) = if fname == fname2
                                                     then ((fname2, (lns2 ++ lns)) : xs)
                                                   else [(fname2, lns2)] ++ insertFunction (fname, lns) xs
 
+-- Function to strip things that the parser isn't concerned with (imports & comments)
+-- Lines are replaced with empty lines to preserve line numbers in error messages
 strip :: String -> String 
 strip s = unlines $ clearLine "--" $ clearLine "import " $ lines s
 
@@ -149,3 +143,28 @@ getImports []     = []
 getImports (x:xs) = case stripPrefix "import " x of 
   Just x  -> x : getImports xs
   Nothing -> getImports xs
+
+-- Post Parsers 
+
+checkProgram :: Prog -> Either String Prog
+checkProgram prog = case checkForDuplicateMethods prog [] of 
+  []  -> case checkMethodParamaters prog of 
+    [] -> Right prog
+    xs -> Left (intercalate ", " xs)
+  xs  -> Left ("Duplicate method definitions: " ++ (show xs))
+
+checkForDuplicateMethods :: Prog -> [String] -> [String]
+checkForDuplicateMethods [] fs            = []
+checkForDuplicateMethods ((f, _) : ps) fs = case elem f fs of 
+  True  -> f : checkForDuplicateMethods ps fs 
+  False -> checkForDuplicateMethods ps (f:fs)
+
+checkMethodParamaters :: Prog -> [String]
+checkMethodParamaters []             = []
+checkMethodParamaters ((f, ls) : ps) = case group (countPattern ls) of 
+  [x] -> checkMethodParamaters ps 
+  xs  -> ("Declarations for " ++ f ++ " have diffrent sized paramater lists") : checkMethodParamaters ps
+
+countPattern :: [Line] -> [Int]
+countPattern []                 = [] 
+countPattern ((Line ps _) : ls) = (length ps) : countPattern ls

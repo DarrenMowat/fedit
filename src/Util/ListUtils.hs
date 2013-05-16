@@ -3,8 +3,7 @@ module Util.ListUtils where
 import Data.Char(isSpace)
 
 {-|
-  Function to trim anything that satisfys the passed in fucntions from the start and
-  end of the list. 
+  Functions to trim stuff from the head and tail of lists
 
   Made generic from https://code.google.com/p/haskellnotebook/wiki/HaskellTrimString
 -}

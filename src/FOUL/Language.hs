@@ -16,7 +16,7 @@ to evaluate if those patterns match the function's inputs.
   Lines can also be comments or empty
 -}
 
-data Line = Line [Pat] Expr | Comment String | Empty deriving (Show, Eq)
+data Line = Line [Pat] Expr deriving (Show, Eq)
 
 
 {-******************************************************************-}
@@ -92,8 +92,6 @@ eval fs gam (EV x)     = fetch x gam
 eval fs gam (EA f es)  = runfun (fetch f fs) (map (eval fs gam) es)
   where
     runfun :: [Line] -> [Val] -> Val
-    runfun ((Comment _) : ls) vs = runfun ls vs
-    runfun (Empty : ls) vs = runfun ls vs
     runfun ((Line ps e) : ls) vs = case matches ps vs of
       Nothing    -> runfun ls vs
       Just gam'  -> eval fs gam' e

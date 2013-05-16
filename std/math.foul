@@ -14,7 +14,7 @@ add(S(x), S(y)) = S(S(add(x, y)))
 -- Note: We don't support negative numbers. Z is returned if answer is negative
 sub(Z, Z)       = Z
 sub(x, Z)       = x
-sub(Z, y)       = Z
+sub(Z, y)       = errorNegativeNumberError
 sub(S(x), S(y)) = sub(x, y)
 
 -- Multiplcation
@@ -25,7 +25,7 @@ mul(x, S(y))    = add(x, mul(x, y))
 
 -- Division a / b a, b
 div(Z, Z)       = Z
-div(x, Z)       = Z 
+div(x, Z)       = errorDivisionByZero
 div(Z, x)       = Z
 div(n, d)       = cond (lt(n, d), Z, S(div(sub(n, d), d)))
 
@@ -53,3 +53,6 @@ eq(x, y)       = F
 
 -- Square
 square(x) = mul(x, x)
+
+-- Infinty
+infinity(a) = infinity(S(a))

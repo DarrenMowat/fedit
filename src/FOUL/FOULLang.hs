@@ -12,12 +12,10 @@ parseToFoul f = do
   case deps of 
     Left  x    -> return $ Left x
     Right deps -> do 
-      -- putStrLn (show deps)
       let progs = map (parseProgram . snd) deps
-      -- putStrLn (show progs)
       case hasLeft progs of 
         True  -> return $ Left (intercalate ", " (collateLeft progs))
-        False -> return $ Right (concat (collateRight progs))
+        False -> return $ checkProgram $ concat (collateRight progs)
 
 evalMain :: Prog -> Val
 evalMain prog = evalExpr prog (EA "main" [])

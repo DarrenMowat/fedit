@@ -7,6 +7,12 @@ import Data.List (intercalate)
 import Data.List.Split (splitOn)
 import Control.Monad.Random (evalRandIO, getRandomR, RandomGen, Rand)
 
+{-
+  Useful things to do operations on file(s)
+
+  Borrowed from my dissertation project
+-}
+
 -- Return the contents of the directory
 -- The contents are returned in the format [(dir_path, filename)]
 -- For example /dir/foo/file -> [("/dir/foo/", "file")]

@@ -1,5 +1,10 @@
 module Util.EitherUtils where
 
+{-
+  Simple utils for collating groups of
+  Lefts & Rights together
+-}
+
 hasLeft :: [Either a b] -> Bool
 hasLeft xs = case collateLeft xs of 
 	[] -> False 
