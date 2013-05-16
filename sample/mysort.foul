@@ -29,7 +29,7 @@ four() = mul(two(), two())
 five() = S(four())
 six() = mul(two(), three())
 seven() = S(six())
-eight() = square(square(two()))
+eight() = mul(two(), square(two()))
 
 -- Main test point
 main() = sort(Cons(four(),
