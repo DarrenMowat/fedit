@@ -70,8 +70,10 @@ getEscapeKey sks = case lookup "" sks of
 
 keyReady :: IO (Maybe Key)
 keyReady = do
+  -- b <- hReady stdin -- This returns false most of the time so this function is constantly looping
+  -- Pins my CPU high, use hWaitForInput instead and wait forever by passing -1 ;)
   b <- hWaitForInput stdin (-1)
-  if (trace "keyReady" $ not b) then return Nothing else do
+  if not b then return Nothing else do
     c <- getChar
     case c of
       '\n' -> return $ Just Return
