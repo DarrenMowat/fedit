@@ -181,3 +181,6 @@ checkMethodParamaters ((f, ls) : ps) = case group (countPattern ls) of
 countPattern :: [Line] -> [Int]
 countPattern []                 = [] 
 countPattern ((Line ps _) : ls) = (length ps) : countPattern ls
+
+-- checkVariableNameOverwriing :: Prog -> [String] 
+-- checkVariableNameOverwriing f

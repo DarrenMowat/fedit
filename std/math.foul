@@ -56,3 +56,8 @@ square(x) = mul(x, x)
 
 -- Infinty
 infinity(a) = infinity(S(a))
+
+-- Fibonacci Numbers
+fib(0) = 0
+fib(1) = 1
+fib(S(S(x))) = add(fib(S(x)), fib(x)) 

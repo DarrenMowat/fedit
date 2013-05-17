@@ -1,7 +1,8 @@
 
+import std/math 
 
 lock(7, 3, 5, 9) = T
 lock(_, _, _, _) = F
 
 
-main() = lock(7, 3, 5, 9)
+main() = fib(30)
