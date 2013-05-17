@@ -79,7 +79,10 @@ data Pat
 -}
 
 parsePat :: Parser Pat
-parsePat = spaces >> choice [try parseIntPat, try parsePV, try parsePC, try parsePS]
+parsePat = spaces >> choice [try parseIntPat, try parseUnamedVariable, try parsePV, try parsePC, try parsePS]
+
+parseUnamedVariable :: Parser Pat
+parseUnamedVariable = PV <$> string "_" <?> "an unamed variable"
 
 parseIntPat :: Parser Pat
 parseIntPat = mkSucPat <$> (read :: String -> Integer) <$> many1 digit <?> "an integer"

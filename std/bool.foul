@@ -2,14 +2,14 @@
 -- FOUL Boolean Library
 -- Can be imported via 'import std/bool'
 
-cond(T, t, f) = t
-cond(F, t, f) = f
+cond(T, t, _) = t
+cond(F, _, f) = f
 
 and(T, T) = T
-and(a, b) = F
+and(_, _) = F
 
 or(F, F) = F
-or(a, b) = T
+or(_, _) = T
 
 not(T) = F
 not(F) = T

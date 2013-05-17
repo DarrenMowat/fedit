@@ -1,6 +1,7 @@
 
 
+lock(7, 3, 5, 9) = T
+lock(_, _, _, _) = F
 
-test(0, 1) = T
 
-main() = test(Z, S(Z))
+main() = lock(7, 3, 5, 9)
