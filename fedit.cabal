@@ -18,7 +18,6 @@ Data-Files:          std/bool.foul
 executable fedit
   extensions:        ForeignFunctionInterface
   extra-libraries:   ncurses
-  -- main-is:        FOUL/Main.hs -- To just compile the interpreter
   main-is:           Main.hs
   hs-source-dirs:    src            
   build-depends:     base ==4.5.*,
@@ -39,3 +38,22 @@ executable fedit
                      Util.FileUtils
                      Util.ListUtils
                      Util.LogUtils
+
+executable foul
+  extensions:        ForeignFunctionInterface
+  extra-libraries:   ncurses
+  main-is:           FOUL/Main.hs
+  hs-source-dirs:    src            
+  build-depends:     base ==4.5.*,
+                     filepath >= 1 && < 2,
+                     directory ==1.2.*,
+                     parsec ==3.1.*,
+                     split > 0,
+                     MonadRandom ==0.1.8
+  other-modules:     FOUL.FOUL
+                     FOUL.ImportResolver
+                     FOUL.Language
+                     FOUL.Parser
+                     Util.EitherUtils
+                     Util.FileUtils
+                     Util.ListUtils
