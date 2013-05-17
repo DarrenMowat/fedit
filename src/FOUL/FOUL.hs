@@ -5,7 +5,6 @@ import FOUL.Language
 import FOUL.Parser
 import Util.EitherUtils
 import Data.List (intercalate)
-import System.Environment (getArgs)
 
 {-
 	FOUL.FOUL is a completely standalone interpreter for FOUL
@@ -35,18 +34,4 @@ evalMain prog = evalExpr prog (EA "main" [])
 
 evalExpr :: Prog -> Expr -> Either String Val 
 evalExpr p e = eval p [] e
-
-main :: IO ()
-main = do
-  args <- getArgs
-  case args of 
-  	[] -> putStrLn "No input specified"
-  	xs -> go $ concat xs
-
-go :: FilePath -> IO ()
-go file = do
-  res <- parseToFoul file
-  case res of
-    Left err -> putStrLn $ "ERROR: " ++ err
-    Right prog -> putStrLn $ "\nmain() -> " ++ (show $ evalMain prog) ++ "\n"
 
