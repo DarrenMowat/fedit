@@ -17,8 +17,8 @@ parseToFoul f = do
         True  -> return $ Left (intercalate ", " (map show (collateLeft progs)))
         False -> return $ checkProgram $ concat (collateRight progs)
 
-evalMain :: Prog -> Val
+evalMain :: Prog -> Either String Val
 evalMain prog = evalExpr prog (EA "main" [])
 
-evalExpr :: Prog -> Expr -> Val 
+evalExpr :: Prog -> Expr -> Either String Val 
 evalExpr p e = eval p [] e

@@ -1,6 +1,8 @@
 module FOUL.Language where
 
 import Debug.Trace
+import Util.EitherUtils
+import Data.List
 
 {-
 A FOUL program consists of a bunch of named functions, each of which
@@ -86,20 +88,33 @@ Let's evaluate expressions: we'll need a program to interpret
 functions and an environment to interpret variables.
 -}
 
-eval :: Prog -> Env -> Expr -> Val
-eval fs gam (EC c es)  = VC c (map (eval fs gam) es)
-eval fs gam (EV x)     = fetch x gam
-eval fs gam (EA f es)  = runfun (fetch f fs) (map (eval fs gam) es)
+eval :: Prog -> Env -> Expr -> Either String Val
+eval fs gam (EC c es)  = case hasLeft vals of 
+  True  -> Left $ intercalate ", " $ collateLeft vals
+  False -> Right $ VC c (collateRight vals)
   where
-    runfun :: [Line] -> [Val] -> Val
+    vals = map (eval fs gam) es
+eval fs gam (EV x)     = case fetch x gam of 
+  Nothing -> Left $ "Couldn't find variable " ++ x
+  Just x -> Right x
+eval fs gam (EA f es)  = case fetch f fs of 
+  Nothing -> Left $ "Couldn't find function " ++ f
+  Just fn -> case hasLeft vals of 
+    True  -> Left $ intercalate ", " $ collateLeft vals
+    False -> runfun fn (collateRight vals)
+  where 
+    vals = map (eval fs gam) es
+    -- runfun :: [Line] -> [Val] -> Val
     runfun ((ps, e) : ls) vs = case matches ps vs of
       Nothing    -> runfun ls vs
       Just gam'  -> eval fs gam' e
+    runfun _ _ = Left $ "Non-exhaustive pattern encountered"
 
 {- We need that looker-upper function. -}
+{- Wrapped in Maybe to protect against things we need to find but don't have (Mistyped/Missing function names and variables) -}
 
-fetch :: String -> [(String, x)] -> x
-fetch x [] = trace ("Couldn't fetch " ++ x) undefined -- Need a way to throw an error that x is undefined in the program file. Could be an undefined program etc. Either x String, Maybe x, the caller can then propogate the message
+fetch :: String -> [(String, x)] -> Maybe x
+fetch x [] = Nothing
 fetch x ((y, v) : gam)
-  | x == y     = v
+  | x == y     = Just v
   | otherwise  = fetch x gam
