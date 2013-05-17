@@ -37,6 +37,8 @@ module Prac1 where
 import Block
 import Overlay
 
+import Debug.Trace
+
 {--------------------------------------------------------------}
 {- This module starts with some equipment I've provided for   -}
 {- you. To get going, you should not need to make any changes -}
@@ -168,7 +170,7 @@ data Damage
 {--------------------------------------------------------------------------}
 
 handleKey :: Key -> TextCursor -> Maybe (Damage, TextCursor)
-handleKey (ArrowKey mod dir) x = handleArrowKey (ArrowKey mod dir) x
+handleKey (ArrowKey mod dir) x =  handleArrowKey (ArrowKey mod dir) x
 handleKey Return (sz, (cz, Here, cs), ss) 
                = Just (LotsChanged, (sz :< stringCursorToString(cz, Here, []), (B0, Here, cs), ss))
 handleKey Backspace x = handleBackspace (x)
