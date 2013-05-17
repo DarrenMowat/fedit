@@ -21,6 +21,7 @@ import Paths_fedit (getDataFileName)
 -- These can then be accessed via cabals getDataFileName
 stdLib :: [(String, String)]
 stdLib = [("std/bool", "std/bool.foul"),
+          ("std/test", "std/test.foul"),
           ("std/math", "std/math.foul")]
 
 data ImportTree = Branch (FilePath, String) [ImportTree] | Leaf (FilePath, String)

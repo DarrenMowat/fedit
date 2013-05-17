@@ -1,0 +1,13 @@
+
+-- FOUL Test Library
+-- Can be imported via 'import std/test'
+
+isTrue(T) = T
+isTrue(_) = F
+
+isFalse(F) = T
+isFalse(_) = F 
+
+allTrue(Nil) = T
+allTrue(Cons(T, xs)) = allTrue(xs)
+allTrue(Cons(F, xs)) = F

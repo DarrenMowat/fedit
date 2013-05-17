@@ -16,6 +16,7 @@ cabal-version:       >=1.8
 -- Standard Library Files
 Data-Files:          std/bool.foul
                      std/math.foul
+                     std/test.foul
 
 executable fedit
   main-is:           Main.hs

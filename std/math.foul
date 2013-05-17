@@ -5,26 +5,21 @@
 import std/bool
 
 -- Addition
-add(Z, Z)       = Z
 add(x, Z)       = x
 add(Z, y)       = y
 add(S(x), S(y)) = S(S(add(x, y)))
 
 -- Subtraction
 -- Note: We don't support negative numbers. Z is returned if answer is negative
-sub(Z, Z)       = Z
 sub(x, Z)       = x
 sub(Z, y)       = errorNegativeNumberError
 sub(S(x), S(y)) = sub(x, y)
 
 -- Multiplcation
-mul(Z, Z)       = Z
-mul(x, Z)       = Z
-mul(Z, y)       = Z
 mul(x, S(y))    = add(x, mul(x, y))
+mul(_, _)       = Z 
 
 -- Division a / b a, b
-div(Z, Z)       = Z
 div(x, Z)       = errorDivisionByZero
 div(Z, x)       = Z
 div(n, d)       = cond (lt(n, d), Z, S(div(sub(n, d), d)))
@@ -41,7 +36,7 @@ lte(x, y) = or(lt(x, y), eq(x, y))
 -- More Than
 mt(S(y), Z)    = T
 mt(Z, x)       = F
-mt(S(x), S(y)) = mte(x, y)
+mt(S(x), S(y)) = mt(x, y)
 
 -- Less Than Or Equal To
 mte(x, y) = or(mt(x, y), eq(x, y))
@@ -49,7 +44,7 @@ mte(x, y) = or(mt(x, y), eq(x, y))
 -- Number Equality 
 eq(Z, Z) = T 
 eq(S(x), S(y)) = eq(x, y)
-eq(x, y)       = F
+eq(_, _)       = F
 
 -- Square
 square(x) = mul(x, x)

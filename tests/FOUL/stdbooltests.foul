@@ -1,0 +1,40 @@
+
+-- FOUL Boolean Library Tests
+
+import std/bool
+import std/test
+
+-- Test and
+t1() = isTrue(and(T, T))
+t2() = isFalse(and(F, T))
+t3() = isFalse(and(T, F))
+t4() = isFalse(and(F, F))
+
+-- Test Or
+t5() = isTrue(or(T, T))
+t6() = isTrue(or(F, T))
+t7() = isTrue(or(T, F))
+t8() = isFalse(or(F, F))
+
+-- Test Cond
+t9() = isTrue(cond(T, T, F))
+t10() = isFalse(cond(F, T, F))
+
+-- Test Not
+t11() = isTrue(not(F))
+t12() = isFalse(not(T))
+
+-- Every test should return true
+main() = allTrue(Cons(t1(),
+                 Cons(t2(),
+                 Cons(t3(),
+                 Cons(t4(),
+                 Cons(t5(),
+                 Cons(t6(),
+                 Cons(t7(),
+                 Cons(t8(),
+                 Cons(t9(),
+                 Cons(t10(),
+                 Cons(t11(),
+                 Cons(t12(),
+                 Nil)))))))))))))

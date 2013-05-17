@@ -1,0 +1,70 @@
+
+-- FOUL Math Library Tests
+
+import std/math
+import std/test
+
+-- Test Add
+t1() = eq(add(4, 5), 9)
+t2() = eq(add(4, 0), 4)
+
+-- Test Sub
+t3() = eq(sub(9, 3), 6)
+t4() = eq(sub(1000, 100), 900)
+
+-- Test Mul
+t5() = eq(mul(2, 5), 10)
+t6() = eq(mul(1, 1), 1)
+
+-- Test Div
+t7() = eq(div(8, 2), 4)
+t8() = eq(div(27, 3), 9)
+
+-- Test Square
+t9() = eq(square(3), 9)
+
+-- Test Fibonacci
+t10() = eq(fib(11), 89)
+
+-- Test Equals (Even though it relies on itself)
+t11() = eq(10, 10)
+
+-- Ordering Tests
+
+-- Test Less Than
+t12() = isFalse(lt(7, 6))
+t13() = isFalse(lt(7, 7))
+t14() = isTrue(lt(6, 7))
+
+-- Test Less Than Or Equal To
+t15() = isTrue(lte(7, 7))
+
+-- Test More Than
+t16() = isTrue(mt(7, 6))
+t17() = isFalse(mt(7, 7))
+t18() = isFalse(mt(6, 7))
+
+-- Test Less Than Or Equal To
+t19() = isTrue(mte(7, 7))
+
+-- Every test should return true
+main() = allTrue(Cons(t1(),
+                 Cons(t2(),
+                 Cons(t3(),
+                 Cons(t4(),
+                 Cons(t5(),
+                 Cons(t6(),
+                 Cons(t7(),
+                 Cons(t8(),
+                 Cons(t9(),
+                 Cons(t10(),
+                 Cons(t11(),
+                 Cons(t12(),
+                 Cons(t13(),
+                 Cons(t14(),
+                 Cons(t15(),
+                 Cons(t16(),
+                 Cons(t17(),
+                 Cons(t18(),
+                 Cons(t19(),
+                 Nil))))))))))))))))))))
