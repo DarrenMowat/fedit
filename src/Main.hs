@@ -6,15 +6,17 @@ module Main where
 
 import Foreign
 import Foreign.C (CInt(..))
-import ANSIEscapes
 import System.IO
 import System.Environment
 
 import Debug.Trace
 
+import Editor.ANSIEscapes
 import Editor.Block
 import Editor.Overlay
 import Editor.KeyHandler
+
+import FOUL.FOUL
 
 data Window = Window
 type WindowPtr = Ptr Window

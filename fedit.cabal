@@ -19,6 +19,8 @@ Data-Files:          std/bool.foul
                      std/test.foul
 
 executable fedit
+  extensions:        ForeignFunctionInterface
+  extra-libraries:   ncurses
   main-is:           Main.hs
   hs-source-dirs:    src            
   build-depends:     base ==4.5.*,
@@ -30,10 +32,9 @@ executable fedit
                      MonadRandom ==0.1.8,
                      mtl >=2 && < 3  
   other-modules:     Editor.ANSIEscapes
-                     Editor.
-                     Editor.
-                     Editor.
-                     Editor.
+                     Editor.Block
+                     Editor.KeyHandler
+                     Editor.Overlay
                      FOUL.FOUL
                      FOUL.ImportResolver
                      FOUL.Language
