@@ -1,11 +1,7 @@
 
--- Boolean Standard Library
+-- FOUL Boolean Library
 -- Can be imported via 'import std/bool'
 
--- Conditional Application / Return
--- cond(x, a, b) 
--- If a is True, return a
--- Else return b
 cond(T, t, f) = t
 cond(F, t, f) = f
 

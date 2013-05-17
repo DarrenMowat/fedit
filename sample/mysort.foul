@@ -23,22 +23,14 @@ mergetree(Node(a, b)) = merge(mergetree(a), mergetree(b))
 
 sort(xs) = mergetree(deal(xs))
 
-two() = S(S(Z))
-three() = S(two())
-four() = mul(two(), two())
-five() = S(four())
-six() = mul(two(), three())
-seven() = S(six())
-eight() = mul(two(), square(two()))
-
 -- Main test point
-main() = sort(Cons(four(),
-              Cons(seven(),
-              Cons(Z,
-              Cons(eight(),
-              Cons(two(),
-              Cons(five(),
-              Cons(three(),
-              Cons(six(),
-              Cons(S(Z),
+main() = sort(Cons(4,
+              Cons(7,
+              Cons(0,
+              Cons(S(9),
+              Cons(2,
+              Cons(5,
+              Cons(3,
+              Cons(6,
+              Cons(1,
               Nil))))))))))

@@ -11,7 +11,6 @@ import Paths_fedit (getDataFileName)
 {-
   FOUL.ImportResolver deals with figuring out which modules
   need to be loaded to successfully interpret the program
-
 -}
 
 -- Mapping of standard modules names to filenames
@@ -36,18 +35,22 @@ getDependencies f = do
   tree <- makeImportTree [] f
   case tree of 
   	Left e  -> return (Left e)
-  	Right t -> return (Right $ nub $ flattenImportTree t) -- We use nub here to get rid of modules that may have been loaded may times by other modules
+    -- We use nub here to get rid of modules that may have been loaded many times by other modules
+    -- This is inefficient as we may have loaded the same module tree many times
+    -- However it is essential in checking for cycles. Could reimplement makeImportTree to hold some
+    -- sort of state of whats already been loaded in all paths, not just the current path of the tree
+  	Right t -> return (Right $ nub $ flattenImportTree t) 
 
 {-
   Generate an import tree for the given file
-  We don't support cyclic imports, if we did we'd loop forever... 
-  This function checks for cycles and complains if there is one (or many)
+  We don't support cyclic imports, if we did we could potentially loop forever... 
+  This function checks for cycles and complains if there is one (or many - We detect all cyclic dependencies in one shot)
   Otherwise we return an ImportTree 
 -}
 makeImportTree :: [FilePath] -> FilePath -> IO (Either String ImportTree)
 makeImportTree past root = do 
   contents <- readFile root
-  let imps = nub $ getImports (lines contents) -- Incase they import the same module twice, save some work
+  let imps = nub $ getImports (lines contents) -- Incase they import the same module twice
   ifs <- mapM (getImportPath root) imps
   case elem root past of 
     True  -> return $ Left ("Cyclic import detected! " ++ root ++ " imported by " ++ (head past))

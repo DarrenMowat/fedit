@@ -25,7 +25,7 @@ applicator :: Parser String
 applicator = (:) <$> lower <*> many alphaNum <?> "an applicator"
 
 constructor :: Parser String
-constructor = (:) <$> upper <*> many alphaNum <?> "an constructor"
+constructor = (:) <$> upper <*> many alphaNum <?> "a constructor"
 
 inParenthesis :: Parser a -> Parser a
 inParenthesis p = between (spaces >> string "(") (spaces >> string ")") p <?> "parenthesis"
@@ -36,9 +36,6 @@ commaSep p = sepBy (spaces >> p <* spaces) (char ',') <?> "comma seperated list"
 parenList :: Parser a -> Parser [a]
 parenList p = spaces >> inParenthesis (commaSep p) <?> "comma seperated list in parenthesis"
 
-integer :: Parser Integer
-integer = (read :: String -> Integer) <$> many1 digit <?> "an integer"
-
 {--- 
 data Expr
   = EC String [Expr]  -- should look like    Con(e1,...,en)
@@ -48,7 +45,16 @@ data Expr
 ----}
 
 parseExpr :: Parser Expr
-parseExpr = spaces >> choice [try parseEA, try parseEC, try parseES, try parseEV] 
+parseExpr = spaces >> choice [try parseEA, try parseIntExpr, try parseEC, try parseES, try parseEV] 
+
+parseIntExpr :: Parser Expr
+parseIntExpr = mkSucExpr <$> (read :: String -> Integer) <$> many1 digit <?> "an integer"
+
+-- The parser doesn't accept negative (-) numbers so we don't
+-- Have to worry about going below Zero here
+mkSucExpr :: Integer -> Expr
+mkSucExpr 0 = EC "Z" []
+mkSucExpr n = EC "S" [mkSucExpr (n - 1)]
 
 parseEC :: Parser Expr
 parseEC = EC <$> constructor <*> parenList parseExpr
@@ -57,9 +63,6 @@ parseES :: Parser Expr
 parseES = spcCons <$> constructor 
 
 spcCons :: String -> Expr
-spcCons "Z" = EC "Zero" []
-spcCons "T" = EC "True" []
-spcCons "F" = EC "False" []
 spcCons n   = EC n []
 
 parseEV :: Parser Expr
@@ -76,7 +79,16 @@ data Pat
 -}
 
 parsePat :: Parser Pat
-parsePat = spaces >> choice [try parsePV, try parsePC, try parsePS]
+parsePat = spaces >> choice [try parseIntPat, try parsePV, try parsePC, try parsePS]
+
+parseIntPat :: Parser Pat
+parseIntPat = mkSucPat <$> (read :: String -> Integer) <$> many1 digit <?> "an integer"
+
+-- The parser doesn't accept negative (-) numbers so we don't
+-- Have to worry about going below Zero here
+mkSucPat :: Integer -> Pat
+mkSucPat 0 = PC "Z" []
+mkSucPat n = PC "S" [mkSucPat (n - 1)]
 
 parsePV :: Parser Pat
 parsePV = PV <$> variable <?> "end of input"
@@ -88,9 +100,6 @@ parsePS :: Parser Pat
 parsePS = spcPat <$> constructor
 
 spcPat :: String -> Pat
-spcPat "Z" = PC "Zero" []
-spcPat "T" = PC "True" []
-spcPat "F" = PC "False" []
 spcPat n   = PC n []
 
 {-
@@ -144,7 +153,8 @@ getImports (x:xs) = case stripPrefix "import " x of
   Just x  -> x : getImports xs
   Nothing -> getImports xs
 
--- Post Parsers 
+-- Sanity Checkers
+-- Don't want to be interpreting insanely written code
 
 checkProgram :: Prog -> Either String Prog
 checkProgram prog = case checkForDuplicateMethods prog [] of 

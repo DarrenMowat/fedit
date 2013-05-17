@@ -1,0 +1,6 @@
+
+
+
+test(0, 1) = T
+
+main() = test(Z, S(Z))

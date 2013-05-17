@@ -1,5 +1,5 @@
 
--- Math Standard Library
+-- FOUL Math Library
 -- Can be imported via 'import std/math'
 
 import std/bool
