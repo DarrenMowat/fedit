@@ -17,5 +17,5 @@ parseProgram file = do
   res <- parseToFoul file
   case res of
     Left err -> putStrLn $ "ERROR: " ++ err
-    Right prog -> putStrLn $ "Program() -> " ++ (show prog) ++ "\nmain() -> " ++ (show $ evalMain prog) 
+    Right prog -> putStrLn $ "Program() -> " ++ (show prog) ++ "\n\nmain() -> " ++ (show $ evalMain prog) ++ "\n"
 

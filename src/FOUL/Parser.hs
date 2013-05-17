@@ -60,10 +60,9 @@ parseEC :: Parser Expr
 parseEC = EC <$> constructor <*> parenList parseExpr
 
 parseES :: Parser Expr 
-parseES = spcCons <$> constructor 
-
-spcCons :: String -> Expr
-spcCons n   = EC n []
+parseES = mkCons <$> constructor 
+  where 
+    mkCons n = EC n []
 
 parseEV :: Parser Expr
 parseEV = EV <$> variable 
@@ -100,10 +99,9 @@ parsePC :: Parser Pat
 parsePC = PC <$> constructor <*> parenList parsePat
 
 parsePS :: Parser Pat
-parsePS = spcPat <$> constructor
-
-spcPat :: String -> Pat
-spcPat n   = PC n []
+parsePS = mkPat <$> constructor 
+  where
+    mkPat n = PC n []
 
 {-
   data Line = Line [Pat] Expr

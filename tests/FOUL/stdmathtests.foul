@@ -24,7 +24,7 @@ t8() = eq(div(27, 3), 9)
 t9() = eq(square(3), 9)
 
 -- Test Fibonacci
-t10() = eq(fib(11), 89)
+t10() = eq(fib(18), 2584)
 
 -- Test Equals (Even though it relies on itself)
 t11() = eq(10, 10)
