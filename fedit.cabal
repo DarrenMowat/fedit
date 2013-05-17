@@ -27,10 +27,8 @@ executable fedit
                      filepath >= 1 && < 2,
                      directory ==1.2.*,
                      parsec ==3.1.*,
-                     process ==1.1.*,
                      split > 0,
-                     MonadRandom ==0.1.8,
-                     mtl >=2 && < 3  
+                     MonadRandom ==0.1.8
   other-modules:     Editor.ANSIEscapes
                      Editor.Block
                      Editor.KeyHandler
