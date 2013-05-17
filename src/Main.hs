@@ -2,21 +2,17 @@ module Main where
 
 {-# LANGUAGE ForeignFunctionInterface #-}
 
--- use flag -lncurses to compile
-
 import Foreign
 import Foreign.C (CInt(..))
 import System.IO
 import System.Environment
 
-import Debug.Trace
-
 import Editor.ANSIEscapes
 import Editor.Block
 import Editor.Overlay
 import Editor.KeyHandler
-
 import FOUL.FOUL
+import Util.LogUtils
 
 data Window = Window
 type WindowPtr = Ptr Window
@@ -78,7 +74,7 @@ keyReady = do
   b <- hWaitForInput stdin (-1)
   if not b then return Nothing else do
     c <- getChar
-    case c of
+    case (shout (show c) c) of
       '\n' -> return $ Just Return
       '\r' -> return $ Just Return
       '\b' -> return $ Just Backspace

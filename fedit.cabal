@@ -38,3 +38,4 @@ executable fedit
                      Util.EitherUtils
                      Util.FileUtils
                      Util.ListUtils
+                     Util.LogUtils
