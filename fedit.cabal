@@ -29,7 +29,11 @@ executable fedit
                      split > 0,
                      MonadRandom ==0.1.8,
                      mtl >=2 && < 3  
-  other-modules:     Fedit
+  other-modules:     Editor.ANSIEscapes
+                     Editor.
+                     Editor.
+                     Editor.
+                     Editor.
                      FOUL.FOUL
                      FOUL.ImportResolver
                      FOUL.Language

@@ -7,3 +7,4 @@ cabal-dev
 *.log
 .virthualenv
 src/Editor/credit
+src/credit

@@ -1,4 +1,4 @@
-module ANSIEscapes 
+module Editor.ANSIEscapes 
   (upLine,
    downLine,
    up,

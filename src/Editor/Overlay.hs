@@ -2,9 +2,9 @@
 
 {- Cropping and Overlaying Sized Blocks of Data -}
 
-module Overlay where
+module Editor.Overlay where
 
-import Block
+import Editor.Block
 
 {- Today, let's think about foreground and background.
 Windows overlap. Menus drop over windows. Scrolling panes

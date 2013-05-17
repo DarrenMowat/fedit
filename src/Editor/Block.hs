@@ -12,7 +12,7 @@ editor environment.
 
 {- Episode 1: Displaying Sized Blocks of Data -}
 
-module Block where
+module Editor.Block where
 
 {- For the most part, applications display data to us in rectangular regions.
 Often, these regions are further subdivided, horizontally or vertically
