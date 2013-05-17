@@ -1,5 +1,6 @@
 
 import std/math 
+import notreadable
 
 lock(7, 3, 5, 9) = T
 lock(_, _, _, _) = F

@@ -5,6 +5,7 @@ import Util.FileUtils (splitPath)
 import Util.ListUtils (trimString)
 import Util.EitherUtils
 import System.FilePath ((</>))
+import System.Directory (doesFileExist, getPermissions, Permissions(..))
 import Data.List (isSuffixOf, intercalate, nub)
 import Paths_fedit (getDataFileName)
 
@@ -49,18 +50,26 @@ getDependencies f = do
 -}
 makeImportTree :: [FilePath] -> FilePath -> IO (Either String ImportTree)
 makeImportTree past root = do 
-  contents <- readFile root
-  let imps = nub $ getImports (lines contents) -- Incase they import the same module twice
-  ifs <- mapM (getImportPath root) imps
-  case elem root past of 
-    True  -> return $ Left ("Cyclic import detected! " ++ root ++ " imported by " ++ (head past))
-    False -> case ifs of 
-      [] -> return $ Right (Leaf (root, contents))
-      otherwise -> do
-        mfs <- mapM (makeImportTree (root : past)) ifs
-        case hasLeft mfs of 
-          True  -> return $ Left (intercalate "," (collateLeft mfs)) 
-          False -> return $ Right (Branch (root, contents) (collateRight mfs))
+  exists <- doesFileExist root
+  case exists of 
+    False -> return $ Left ("Module " ++ root ++ " does not exist!")
+    True  -> do 
+      permissions <- getPermissions root
+      case readable permissions of 
+        False -> return $ Left ("Module " ++ root ++ " isn't readable. Ensure the current user has read permissions for the file.")
+        True  -> do
+          contents <- readFile root
+          let imps = nub $ getImports (lines contents) -- Incase they import the same module twice
+          ifs <- mapM (getImportPath root) imps
+          case elem root past of 
+            True  -> return $ Left ("Cyclic import detected! " ++ root ++ " imported by " ++ (head past))
+            False -> case ifs of 
+              [] -> return $ Right (Leaf (root, contents))
+              otherwise -> do
+                mfs <- mapM (makeImportTree (root : past)) ifs
+                case hasLeft mfs of 
+                  True  -> return $ Left (intercalate "," (collateLeft mfs)) 
+                  False -> return $ Right (Branch (root, contents) (collateRight mfs))
 
 {-
   Get the path on the filesystem of the module. 
