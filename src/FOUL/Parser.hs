@@ -160,7 +160,9 @@ getImports (x:xs) = case stripPrefix "import " x of
 checkProgram :: Prog -> Either String Prog
 checkProgram prog = case checkForDuplicateMethods prog [] of 
   []  -> case checkMethodParamaters prog of 
-    [] -> Right prog
+    [] -> case checkVariableNameOverwriting prog of 
+      [] -> Right prog
+      xs -> Left (intercalate ", " xs)
     xs -> Left (intercalate ", " xs)
   xs  -> Left ("Duplicate method definitions: " ++ (show xs))
 
@@ -172,10 +174,23 @@ checkForDuplicateMethods ((f, _) : ps) fs = case elem f fs of
 
 checkMethodParamaters :: Prog -> [String]
 checkMethodParamaters []             = []
-checkMethodParamaters ((f, ls) : ps) = case group (map (length . fst) ls) of 
-  [x] -> checkMethodParamaters ps 
-  xs  -> ("Declarations for " ++ f ++ " have diffrent sized paramater lists") : checkMethodParamaters ps
+checkMethodParamaters ((f, ls) : ps) = case length (group (map (length . fst) ls)) of 
+  1 -> checkMethodParamaters ps 
+  _ -> ("Declarations for " ++ f ++ " have diffrent sized paramater lists") : checkMethodParamaters ps
+
+checkVariableNameOverwriting :: Prog -> [String]
+checkVariableNameOverwriting [] = []
+checkVariableNameOverwriting ((f, []) : ps) = checkVariableNameOverwriting ps 
+checkVariableNameOverwriting ((f, (l:ls)) : ps) = case (length names) == (length $ group names) of 
+  True  -> checkVariableNameOverwriting ((f, ls) : ps)
+  False -> ("Duplicate variable binding in " ++ f ++ " " ++ (show names)) : checkVariableNameOverwriting ((f, ls) : ps)
+  where 
+    names = filterPatternVariableNames l
 
 
--- checkVariableNameOverwriing :: Prog -> [String] 
--- checkVariableNameOverwriing f
+filterPatternVariableNames :: Line -> [String]
+filterPatternVariableNames ([], _) = []
+filterPatternVariableNames (((PV "_") : ps), e) = filterPatternVariableNames (ps, e)  
+filterPatternVariableNames (((PV x) : ps), e) = x : filterPatternVariableNames (ps, e)  
+filterPatternVariableNames ((_ : ps), e) = filterPatternVariableNames (ps, e)  
+
