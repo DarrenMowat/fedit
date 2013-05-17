@@ -30,7 +30,7 @@ executable fedit
                      MonadRandom ==0.1.8,
                      mtl >=2 && < 3  
   other-modules:     Fedit
-                     FOUL.FOULLang
+                     FOUL.FOUL
                      FOUL.ImportResolver
                      FOUL.Language
                      FOUL.Parser

@@ -1,3 +1,3 @@
 module Fedit where
 
-import FOUL.FOULLang
+import FOUL.FOUL

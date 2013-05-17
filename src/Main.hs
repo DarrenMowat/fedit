@@ -3,7 +3,7 @@ module Main where
 import System.Environment (getArgs)
 
 import Fedit
-import FOUL.FOULLang
+import FOUL.FOUL
 
 main :: IO ()
 main = do
