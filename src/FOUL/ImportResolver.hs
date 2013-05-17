@@ -24,7 +24,9 @@ stdLib = [("std/bool", "std/bool.foul"),
           ("std/test", "std/test.foul"),
           ("std/math", "std/math.foul")]
 
-data ImportTree = Branch (FilePath, String) [ImportTree] | Leaf (FilePath, String)
+type ModuleFile = (FilePath, String)
+
+data ImportTree = Branch (ModuleFile, String) [ImportTree] | Leaf (ModuleFile, String)
 
 {-
   Return a list, and their content, that are required to interpret the program.
@@ -35,9 +37,9 @@ data ImportTree = Branch (FilePath, String) [ImportTree] | Leaf (FilePath, Strin
   We return the FilePath & contents of each modules so they are only 
   loaded from the disk once. 
 -}
-getDependencies :: FilePath -> IO (Either String [(FilePath, String)])
+getDependencies :: FilePath -> IO (Either String [(ModuleFile, String)])
 getDependencies f = do 
-  tree <- makeImportTree [] f
+  tree <- makeImportTree [] ("main_module", f)
   case tree of 
   	Left e  -> return (Left e)
     -- We use nub here to get rid of modules that may have been loaded many times by other modules
@@ -52,43 +54,45 @@ getDependencies f = do
   This function checks for cycles and complains if there is one (or many - We detect all cyclic dependencies in one shot)
   Otherwise we return an ImportTree 
 -}
-makeImportTree :: [FilePath] -> FilePath -> IO (Either String ImportTree)
-makeImportTree past root = do 
+makeImportTree :: [ModuleFile] -> ModuleFile -> IO (Either String ImportTree)
+makeImportTree past (name, root) = do 
   exists <- doesFileExist root
   case exists of 
-    False -> return $ Left ("Module " ++ root ++ " does not exist!")
+    False -> return $ Left ("Module " ++ name ++ " does not exist [" ++ root ++ "]")
     True  -> do 
       permissions <- getPermissions root
       case readable permissions of 
-        False -> return $ Left ("Module " ++ root ++ " isn't readable. Ensure the current user has read permissions for the file.")
+        False -> return $ Left ("Module " ++ name ++ " isn't readable. Ensure the current user has read permissions for the file. [" ++ root ++ "]")
         True  -> do
           contents <- readFile root
           let imps = nub $ getImports (lines contents) -- Incase they import the same module twice
           ifs <- mapM (getImportPath root) imps
-          case elem root past of 
-            True  -> return $ Left ("Cyclic import detected! " ++ root ++ " imported by " ++ (head past))
+          case elem (name, root) past of 
+            True  -> return $ Left ("Cyclic import detected! " ++ name ++ " imported by " ++ (snd $ head past))
             False -> case ifs of 
-              [] -> return $ Right (Leaf (root, contents))
+              [] -> return $ Right (Leaf ((root, name), contents))
               otherwise -> do
-                mfs <- mapM (makeImportTree (root : past)) ifs
+                mfs <- mapM (makeImportTree ((name, root) : past)) ifs
                 case hasLeft mfs of 
                   True  -> return $ Left (intercalate "," (collateLeft mfs)) 
-                  False -> return $ Right (Branch (root, contents) (collateRight mfs))
+                  False -> return $ Right (Branch ((root, name), contents) (collateRight mfs))
 
 {-
   Get the path on the filesystem of the module. 
   This can be a standard library module or a user defined module
 -}
-getImportPath :: FilePath -> String -> IO FilePath
+getImportPath :: FilePath -> String -> IO ModuleFile
 getImportPath root name = case lookup (trimString name) stdLib of 
-  Just i  -> getDataFileName i
+  Just i  -> do 
+    f <- getDataFileName i
+    return (name, f)
   Nothing -> do 
     let (d, p) = splitPath (trimString root)
     let ip = d </> (trimString name)
     case isSuffixOf ".foul" ip of 
-      True  -> return ip
-      False -> return (ip ++ ".foul")
+      True  -> return (name, ip)
+      False -> return (name, (ip ++ ".foul"))
 
-flattenImportTree :: ImportTree -> [(FilePath, String)]
+flattenImportTree :: ImportTree -> [(ModuleFile, String)]
 flattenImportTree (Leaf x) = [x]
 flattenImportTree (Branch x zs) = [x] ++ (concat $ map flattenImportTree zs)
