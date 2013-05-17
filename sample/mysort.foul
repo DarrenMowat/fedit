@@ -4,7 +4,7 @@
 import std/bool
 import std/math
 
-merge(Nil, ys) = yss
+merge(Nil, ys) = ys
 merge(xs, Nil) = xs
 merge(Cons(x, xs), Cons(y, ys)) =
   cond(lt(x, y), Cons(x, merge(xs, Cons(y, ys))),
