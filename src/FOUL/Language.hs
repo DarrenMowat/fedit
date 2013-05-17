@@ -90,25 +90,27 @@ functions and an environment to interpret variables.
 
 eval :: Prog -> Env -> Expr -> Either String Val
 eval fs gam (EC c es)  = case hasLeft vals of 
-  True  -> Left $ intercalate ", " $ collateLeft vals
+  True  -> Left $ intercalate ", " $ nub $ collateLeft vals
   False -> Right $ VC c (collateRight vals)
-  where
+  where    
+    vals :: [Either String Val]
     vals = map (eval fs gam) es
 eval fs gam (EV x)     = case fetch x gam of 
-  Nothing -> Left $ "Couldn't find variable " ++ x
+  Nothing -> Left $ "Couldn't find variable " ++ x 
   Just x -> Right x
 eval fs gam (EA f es)  = case fetch f fs of 
   Nothing -> Left $ "Couldn't find function " ++ f
   Just fn -> case hasLeft vals of 
-    True  -> Left $ intercalate ", " $ collateLeft vals
-    False -> runfun fn (collateRight vals)
+    True  -> Left $ intercalate ", " $ nub $ collateLeft vals
+    False -> runfun f fn (collateRight vals)
   where 
+    vals :: [Either String Val]
     vals = map (eval fs gam) es
-    -- runfun :: [Line] -> [Val] -> Val
-    runfun ((ps, e) : ls) vs = case matches ps vs of
-      Nothing    -> runfun ls vs
+    runfun :: String -> [Line] -> [Val] -> Either String Val
+    runfun f ((ps, e) : ls) vs = case matches ps vs of
+      Nothing    -> runfun f ls vs
       Just gam'  -> eval fs gam' e
-    runfun _ _ = Left $ "Non-exhaustive pattern encountered"
+    runfun f _ _ = Left $ "Non-exhaustive pattern encountered in function " ++ f
 
 {- We need that looker-upper function. -}
 {- Wrapped in Maybe to protect against things we need to find but don't have (Mistyped/Missing function names and variables) -}
