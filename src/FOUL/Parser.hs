@@ -113,7 +113,7 @@ parseLine :: Parser Line
 parseLine = spaces >> parseExpressionLine
 
 parseExpressionLine :: Parser Line
-parseExpressionLine =  Line <$> parenList parsePat  <* spaces <* char '=' <* spaces <*> parseExpr
+parseExpressionLine =  (,) <$> parenList parsePat  <* spaces <* char '=' <* spaces <*> parseExpr
 
 parseProg :: Parser Prog
 parseProg = manyTill parseFunction (try (choice [spaces >> eof, eof]))
@@ -145,9 +145,9 @@ clearLine y (x:xs) = case isPrefixOf y x of
   True  -> "" : clearLine y xs
   False -> x : clearLine y xs
 
-parseProgram :: String -> Either String Prog
+parseProgram :: String -> Either ParseError Prog
 parseProgram prog = case parse parseProg "ParseProgram" (strip prog) of 
-  Left err -> Left ((show err) ++ " -> " ++ (show $ errorPos err)) 
+  Left er -> Left er
   Right x -> Right (collateFunctions x [])
 
 getImports :: [String] -> [String] 
@@ -174,13 +174,10 @@ checkForDuplicateMethods ((f, _) : ps) fs = case elem f fs of
 
 checkMethodParamaters :: Prog -> [String]
 checkMethodParamaters []             = []
-checkMethodParamaters ((f, ls) : ps) = case group (countPattern ls) of 
+checkMethodParamaters ((f, ls) : ps) = case group (map (length . fst) ls) of 
   [x] -> checkMethodParamaters ps 
   xs  -> ("Declarations for " ++ f ++ " have diffrent sized paramater lists") : checkMethodParamaters ps
 
-countPattern :: [Line] -> [Int]
-countPattern []                 = [] 
-countPattern ((Line ps _) : ls) = (length ps) : countPattern ls
 
 -- checkVariableNameOverwriing :: Prog -> [String] 
 -- checkVariableNameOverwriing f

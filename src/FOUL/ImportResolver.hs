@@ -12,6 +12,9 @@ import Paths_fedit (getDataFileName)
 {-
   FOUL.ImportResolver deals with figuring out which modules
   need to be loaded to successfully interpret the program
+
+  TODO: Allow user to choose which functions to import from a module
+
 -}
 
 -- Mapping of standard modules names to filenames

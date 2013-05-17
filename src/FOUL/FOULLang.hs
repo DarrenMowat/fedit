@@ -14,7 +14,7 @@ parseToFoul f = do
     Right deps -> do 
       let progs = map (parseProgram . snd) deps
       case hasLeft progs of 
-        True  -> return $ Left (intercalate ", " (collateLeft progs))
+        True  -> return $ Left (intercalate ", " (map show (collateLeft progs)))
         False -> return $ checkProgram $ concat (collateRight progs)
 
 evalMain :: Prog -> Val
