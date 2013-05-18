@@ -1,52 +1,10 @@
-{--------------------------------------------------------------}
-{- CS410 Advanced Functional Programming                      -}
-{- Practical 1: A Text Editor                                 -}
-{--------------------------------------------------------------}
-
-{--------------------------------------------------------------}
-{- SUBMIT YOUR VERSION OF THIS FILE BY EMAIL TO CONOR         -}
-{- DEADLINE: midnight, Thursday 11 October                    -}
-{--------------------------------------------------------------}
-
-{--------------------------------------------------------------}
-{- IDENTIFY YOURSELF:                                         -}
-{- Name: Darren Mowat                                         -}
-{--------------------------------------------------------------}
-
-{--------------------------------------------------------------}
-{- THIS CODE WILL COMPILE UNDER UNIX BUT NOT WINDOWS          -}
-{-                                                            -}
-{- To compile the project, use shell command                  -}
-{-   make                                                     -}
-{- To run your editor, try                                    -}
-{-   ./credit <filename>                                      -}
-{- or                                                         -}
-{-   ./credit                                                 -}
-{- to start from blank.                                       -}
-{- To quit the editor, press ESCAPE.                          -}
-{--------------------------------------------------------------}
-
-{--------------------------------------------------------------}
-{- This practical makes use of a bunch of other files I've    -}
-{- written, including the layout file from last time. This is -}
-{- the only file you should modify. Don't rename this file!   -} 
-{--------------------------------------------------------------}
 
 module Editor.KeyHandler where
 
 import Editor.Block
 import Editor.Overlay
 
-import Debug.Trace
-
-{--------------------------------------------------------------}
-{- This module starts with some equipment I've provided for   -}
-{- you. To get going, you should not need to make any changes -}
-{- but to try more sophisticated things, e.g. editing with    -}
-{- selection, cut, and paste, you may want to make changes.   -}
-{-                                                            -}
-{- Your main mission is to implement handleKey, down below.   -}
-{--------------------------------------------------------------}
+import Util.LogUtils
 
 {- From the lecture, here's that type of backward lists. -}
 
@@ -61,7 +19,7 @@ type Cursor x m = (Bwd x, m, [x])
 
 {- Here's something to put in the middle, to show where you are. -}
 
-data Here = Here | Multi String deriving Show
+data Here = Here deriving Show
 
 {- If you start working with selections, you may wish to modify the
    Here type to account for the current state, e.g. {no selection,
@@ -76,7 +34,9 @@ type StringCursor = Cursor Char Here
 
 type TextCursor = Cursor String StringCursor
 
-type Clipboard = String
+type EditorFile = (FilePath, String)
+
+data EditorContext = EC TextCursor EditorFile deriving (Show)
 
 {- Useful equipment: deactivate turns a cursor into a list by shuffling
    everything to the right, but it also tells you /numerically/ where the
@@ -100,6 +60,9 @@ activate (i, xs) = inward i (B0, Here, xs) where
    Layout Box, together with the coordinates of Here.
    This is how my code figures out what to display and where to put the
    cursor. -}
+
+lineNumGutterSize :: Int
+lineNumGutterSize = 6
 
 whatAndWhere :: TextCursor -> (Layout Box, Point)
 whatAndWhere (czz, cur, css) = (foldr (joinV . layS) layZ strs, (x, y)) where
@@ -239,5 +202,11 @@ handleArrowKey (ArrowKey _ DownArrow) (bs, cs, a:as)
   when we don't care about the current cursor position
 -}
 stringCursorToString :: StringCursor -> String
-stringCursorToString x = str
-  where (i, str) = deactivate x
+stringCursorToString s = snd $ deactivate s
+
+textCursorToText :: TextCursor -> [String]
+textCursorToText (bs, c, xs) = toFwd bs ++ stringCursorToString c : xs
+
+toFwd :: Bwd a -> [a]
+toFwd B0        = []
+toFwd (bs :< b) = toFwd bs ++ [b] 

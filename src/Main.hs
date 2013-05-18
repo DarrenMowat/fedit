@@ -5,6 +5,7 @@ module Main where
 import Foreign
 import Foreign.C (CInt(..))
 import System.IO
+import System.Directory
 import System.Environment
 
 import Editor.ANSIEscapes
@@ -17,6 +18,11 @@ import Util.LogUtils
 data Window = Window
 type WindowPtr = Ptr Window
 
+horizBorder :: Int
+horizBorder = 4
+
+lineNumGutter :: Int
+lineNumGutter = 4
 
 foreign import ccall
   initscr :: IO () 
@@ -37,7 +43,7 @@ scrSize :: IO (Int, Int)
 scrSize = do
     lnes <- peek linesPtr
     cols <- peek colsPtr
-    return (fromIntegral cols, fromIntegral lnes)
+    return ((fromIntegral cols), fromIntegral lnes)
 
 copies :: Int -> a -> [a]
 copies n a = take n (repeat a)
@@ -89,8 +95,8 @@ keyReady = do
             _ -> return $ Just Quit
       _ -> return $ Nothing
 
-outer :: ScreenState -> TextCursor -> IO ()
-outer ps tc = inner ps tc (whatAndWhere tc) LotsChanged
+outer :: ScreenState -> EditorContext -> IO ()
+outer ps (EC tc f) = inner ps tc (whatAndWhere tc) LotsChanged
   where
   inner ps@(p, s) tc lc@(l, c@(cx, cy)) d = do
     refresh
@@ -101,11 +107,11 @@ outer ps tc = inner ps tc (whatAndWhere tc) LotsChanged
       LotsChanged -> do
         clearScreen
         resetCursor
-        mapM_ putStr (layout (cropLay cropBox ps' l))
+        mapM_ putStr $ layout $ cropLay cropBox ps' l
       LineChanged -> do
         resetCursor
         down (cy - py)
-        mapM_ putStr (layout (cropLay cropBox ((px, cy), (sw, 1)) l))
+        mapM_ putStr $ layout $ cropLay cropBox ((px, cy), (sw, 1)) l
       _ -> return ()
     if d' > NoChange then do
       resetCursor
@@ -113,10 +119,14 @@ outer ps tc = inner ps tc (whatAndWhere tc) LotsChanged
       down (cy - py)
      else return ()
     mc <- keyReady
-    case mc of
+    case (shout (show f) mc) of
       Nothing -> inner ps' tc lc NoChange
       Just Quit -> do 
-        return ()
+        case (fst f) of 
+          "" -> return ()
+          p  -> do 
+            let ls = textCursorToText tc
+            writeFile p (unlines ls)
       Just k -> case handleKey k tc of
         Nothing -> inner ps' tc lc NoChange
         Just (d, tc') -> inner ps' tc' (whatAndWhere tc') d
@@ -126,13 +136,19 @@ main = do
   hSetBuffering stdout NoBuffering
   hSetBuffering stdin NoBuffering
   xs <- getArgs
-  s <- case xs of
-    [] -> return ""
-    (x : _) -> readFile x
-  let (l, ls) = case lines s of
+  econt <- case xs of
+    [] -> return ("", "")
+    (x : _) -> do 
+      exists <- doesFileExist x
+      case exists of 
+        True -> do 
+          contents <- readFile x
+          return (x, contents)
+        False -> return (x, "")
+  let (l, ls) = case lines (snd econt) of
         [] -> ("", [])
         (l : ls) -> (l, ls)
   initscr
-  outer ((0, 0), (-1, -1)) (B0, (B0, Here, l), ls)
+  outer ((0, 0), (-1, -1)) (EC (B0, (B0, Here, l), ls) econt)
   endwin
   return ()

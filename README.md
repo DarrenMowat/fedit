@@ -16,7 +16,6 @@
 
 ## Language TODO
 
-* Catch runtime errors better
 * Excpetion throwing
 * Pretty Print Results
 * Store a (function -> module) mappign so errors can be matched to a module

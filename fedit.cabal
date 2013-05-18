@@ -40,8 +40,6 @@ executable fedit
                      Util.LogUtils
 
 executable foul
-  extensions:        ForeignFunctionInterface
-  extra-libraries:   ncurses
   main-is:           FOUL/Main.hs
   hs-source-dirs:    src            
   build-depends:     base ==4.5.*,
