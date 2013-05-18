@@ -85,6 +85,7 @@ keyReady = do
       '\r' -> return $ Just Return
       '\b' -> return $ Just Backspace
       '\DEL' -> return $ Just Backspace
+      '\ENQ' -> return $ Just Return
       _ | c >= ' ' -> return $ Just (CharKey c)
       '\ESC' -> do
         b <- hReady stdin
@@ -96,10 +97,10 @@ keyReady = do
       _ -> return $ Nothing
 
 outer :: ScreenState -> EditorContext -> IO ()
-outer ps (EC tc f) = inner ps tc (whatAndWhere tc) LotsChanged
+outer ps (EC tc bc f) = inner ps tc (whatAndWhere tc) LotsChanged
   where
   inner ps@(p, s) tc lc@(l, c@(cx, cy)) d = do
-    refresh
+    shout (show d) refresh
     s' <- scrSize
     let ps'@((px, py), (sw, _)) = onScreen c (p, s')
     let d' = if ps /= ps' then LotsChanged else d
@@ -143,7 +144,6 @@ evaluateContents file = do
       let ev = evalMain prog
       return $ "\nmain() -> " ++ (show $ ev) ++ "\n"
 
-
 main :: IO ()
 main = do 
   hSetBuffering stdout NoBuffering
@@ -162,5 +162,11 @@ main = do
         [] -> ("", [])
         (l : ls) -> (l, ls)
   initscr
-  outer ((0, 0), (-1, -1)) (EC (B0, (B0, Here, l), ls) econt)
+  outer ((0, 0), (-1, -1)) (EC (mkTextCursor l ls) emptyTextCursor econt)
   return ()
+
+mkTextCursor :: String -> [String] -> TextCursor 
+mkTextCursor s ss = (B0, (B0, Here, s), ss)
+
+emptyTextCursor :: TextCursor
+emptyTextCursor = (B0, (B0, Here, ""), [])

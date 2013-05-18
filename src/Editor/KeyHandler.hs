@@ -36,7 +36,7 @@ type TextCursor = Cursor String StringCursor
 
 type EditorFile = (FilePath, String)
 
-data EditorContext = EC TextCursor EditorFile deriving (Show)
+data EditorContext = EC TextCursor TextCursor EditorFile deriving (Show)
 
 {- Useful equipment: deactivate turns a cursor into a list by shuffling
    everything to the right, but it also tells you /numerically/ where the
@@ -206,6 +206,10 @@ stringCursorToString s = snd $ deactivate s
 
 textCursorToText :: TextCursor -> [String]
 textCursorToText (bs, c, xs) = toFwd bs ++ stringCursorToString c : xs
+
+countLines :: TextCursor -> Int
+countLines t = length $ textCursorToText t
+
 
 toFwd :: Bwd a -> [a]
 toFwd B0        = []

@@ -38,3 +38,5 @@ main() = allTrue(Cons(t1(),
                  Cons(t11(),
                  Cons(t12(),
                  Nil)))))))))))))
+
+
