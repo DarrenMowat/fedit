@@ -119,7 +119,7 @@ outer ps (EC tc f) = inner ps tc (whatAndWhere tc) LotsChanged
       down (cy - py)
      else return ()
     mc <- keyReady
-    case (shout (show f) mc) of
+    case mc of
       Nothing -> inner ps' tc lc NoChange
       Just Quit -> do 
         case (fst f) of 
@@ -127,9 +127,22 @@ outer ps (EC tc f) = inner ps tc (whatAndWhere tc) LotsChanged
           p  -> do 
             let ls = textCursorToText tc
             writeFile p (unlines ls)
+            res <- evaluateContents p
+            endwin
+            putStrLn res
       Just k -> case handleKey k tc of
         Nothing -> inner ps' tc lc NoChange
         Just (d, tc') -> inner ps' tc' (whatAndWhere tc') d
+
+evaluateContents :: FilePath -> IO String
+evaluateContents file = do
+  res <- parseToFoul file
+  case res of
+    Left err -> return $ "ERROR: " ++ (show err)
+    Right prog -> do 
+      let ev = evalMain prog
+      return $ "\nmain() -> " ++ (show $ ev) ++ "\n"
+
 
 main :: IO ()
 main = do 
@@ -150,5 +163,4 @@ main = do
         (l : ls) -> (l, ls)
   initscr
   outer ((0, 0), (-1, -1)) (EC (B0, (B0, Here, l), ls) econt)
-  endwin
   return ()
