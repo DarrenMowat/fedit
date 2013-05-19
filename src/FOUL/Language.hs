@@ -27,7 +27,28 @@ type Line = ([Pat],Expr)
 
 type CName = String
 data Val = VC CName [Val]  -- a constructor with 0 or more subvalues
-  deriving (Show, Eq)
+  deriving (Eq)
+
+instance Show Val where 
+  show = prettyPrintVal
+
+prettyPrintVal :: Val -> String 
+prettyPrintVal (VC c vs) = case sucToInt (VC c vs) of 
+  Right i -> (show i)
+  Left _  -> case null vs of 
+    True  -> c
+    False -> concat $ [c, " (", intercalate ", " vvs, ")"]
+  where 
+    vvs = map prettyPrintVal vs
+
+sucToInt :: Val -> Either Val Int
+sucToInt (VC "Z" _)  = Right 0
+sucToInt (VC "S" xs) = case hasLeft xxs of 
+  True  -> Left (VC "S" xs)
+  False -> Right $ 1 + sum (collateRight xxs)
+  where
+    xxs = map sucToInt xs
+sucToInt v = Left v
 
 {-******************************************************************-}
 {- FOUL Patterns                                                    -}

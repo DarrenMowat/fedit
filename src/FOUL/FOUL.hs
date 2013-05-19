@@ -1,4 +1,4 @@
-module FOUL.FOUL(parseToFoulFromFile, parseToFoulFromString, evalMain, evalExpr, prettyPrintVal) where
+module FOUL.FOUL(parseToFoulFromFile, parseToFoulFromString, evalMain, evalExpr) where
 
 import FOUL.ImportResolver
 import FOUL.Language
@@ -40,21 +40,3 @@ evalMain prog = evalExpr prog (EA "main" [])
 
 evalExpr :: Prog -> Expr -> Either String Val 
 evalExpr p e = eval p [] e
-
-prettyPrintVal :: Val -> String 
-prettyPrintVal (VC c vs) = case shout (show (VC c vs)) (sucToInt (VC c vs)) of 
-  Right i -> (show i)
-  Left _  -> case null vs of 
-    True  -> c
-    False -> concat $ [c, " (", intercalate ", " vvs, ")"]
-  where 
-    vvs = map prettyPrintVal vs
-
-sucToInt :: Val -> Either Val Int
-sucToInt (VC "Z" _)  = Right 0
-sucToInt (VC "S" xs) = case hasLeft xxs of 
-  True  -> Left (VC "S" xs)
-  False -> Right $ 1 + sum (collateRight xxs)
-  where
-    xxs = map sucToInt xs
-sucToInt v = Left v

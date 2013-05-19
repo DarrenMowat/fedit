@@ -144,7 +144,7 @@ evaluateContents file = do
       let ev = evalMain prog
       case ev of 
         Left err -> return $ "EvalError: " ++ (show err)
-        Right va -> return $ "\nmain() -> " ++ (prettyPrintVal va) ++ "\n"
+        Right va -> return $ "\nmain() -> " ++ (show va) ++ "\n"
 
 main :: IO ()
 main = do 
