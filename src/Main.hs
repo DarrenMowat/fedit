@@ -137,12 +137,14 @@ outer ps (EC tc bc f) = inner ps tc (whatAndWhere tc) LotsChanged
 
 evaluateContents :: FilePath -> IO String
 evaluateContents file = do
-  res <- parseToFoul file
+  res <- parseToFoulFromFile file
   case res of
-    Left err -> return $ "ERROR: " ++ (show err)
+    Left err -> return $ "ParserError: " ++ (show err)
     Right prog -> do 
       let ev = evalMain prog
-      return $ "\nmain() -> " ++ (show $ ev) ++ "\n"
+      case ev of 
+        Left err -> return $ "EvalError: " ++ (show err)
+        Right va -> return $ "\nmain() -> " ++ (prettyPrintVal va) ++ "\n"
 
 main :: IO ()
 main = do 

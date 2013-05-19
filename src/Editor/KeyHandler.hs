@@ -205,11 +205,13 @@ stringCursorToString :: StringCursor -> String
 stringCursorToString s = snd $ deactivate s
 
 textCursorToText :: TextCursor -> [String]
-textCursorToText (bs, c, xs) = toFwd bs ++ stringCursorToString c : xs
+textCursorToText (czz, cur, css) = strs
+  where
+    (_, cs) = deactivate cur
+    (_, strs) = deactivate (czz, Here, cs : css)
 
 countLines :: TextCursor -> Int
 countLines t = length $ textCursorToText t
-
 
 toFwd :: Bwd a -> [a]
 toFwd B0        = []

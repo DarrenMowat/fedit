@@ -30,6 +30,7 @@ executable fedit
                      Editor.Block
                      Editor.KeyHandler
                      Editor.Overlay
+                     FOUL.Blackbox
                      FOUL.FOUL
                      FOUL.ImportResolver
                      FOUL.Language

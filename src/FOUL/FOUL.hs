@@ -1,10 +1,12 @@
-module FOUL.FOUL(parseToFoul, evalMain, evalExpr) where
+module FOUL.FOUL(parseToFoulFromFile, parseToFoulFromString, evalMain, evalExpr, prettyPrintVal) where
 
 import FOUL.ImportResolver
 import FOUL.Language
 import FOUL.Parser
 import Util.EitherUtils
-import Data.List (intercalate)
+import Data.List (intercalate, null)
+
+import Util.LogUtils
 
 {-
 	FOUL.FOUL is a completely standalone interpreter for FOUL
@@ -18,8 +20,8 @@ import Data.List (intercalate)
 	FOUL import system accesses standard library modules
 -}
 
-parseToFoul :: FilePath -> IO (Either String Prog)
-parseToFoul f = do 
+parseToFoulFromFile :: FilePath -> IO (Either String Prog)
+parseToFoulFromFile f = do 
   deps <- getDependencies f
   case deps of 
     Left  x    -> return $ Left x
@@ -29,9 +31,30 @@ parseToFoul f = do
         True  -> return $ Left (intercalate ", " (map show (collateLeft progs)))
         False -> return $ checkProgram $ concat (collateRight progs)
 
+parseToFoulFromString :: String -> FilePath -> IO (Either String Prog)
+parseToFoulFromString p f = undefined
+
+
 evalMain :: Prog -> Either String Val
 evalMain prog = evalExpr prog (EA "main" [])
 
 evalExpr :: Prog -> Expr -> Either String Val 
 evalExpr p e = eval p [] e
 
+prettyPrintVal :: Val -> String 
+prettyPrintVal (VC c vs) = case shout (show (VC c vs)) (sucToInt (VC c vs)) of 
+  Right i -> (show i)
+  Left _  -> case null vs of 
+    True  -> c
+    False -> concat $ [c, " (", intercalate ", " vvs, ")"]
+  where 
+    vvs = map prettyPrintVal vs
+
+sucToInt :: Val -> Either Val Int
+sucToInt (VC "Z" _)  = Right 0
+sucToInt (VC "S" xs) = case hasLeft xxs of 
+  True  -> Left (VC "S" xs)
+  False -> Right $ 1 + sum (collateRight xxs)
+  where
+    xxs = map sucToInt xs
+sucToInt v = Left v
