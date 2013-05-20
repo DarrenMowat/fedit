@@ -1,8 +1,9 @@
-
-# Fedit - Text editor for FOUL
+# Foul EDITor
 
 CS410 Final Assignment
+
 Darren Mowat
+
 200911909
 
 ## Things added to the FOUL Language
@@ -37,6 +38,7 @@ Darren Mowat
 
 FOUL & Fedit are packed using Cabal as they have some external dependencies that would be hard to manage with MakeFiles.
 Cabal will build 2 seperate binarys when run
+
     * foul - FOUL parser and evaluator
     * fedit - Foul EDITor 
 
