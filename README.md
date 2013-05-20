@@ -66,13 +66,16 @@ The standard library modules are defined in std/*. These show an example of usin
 ## Screenshots
 
 * Parse Error
+
 ![ParseError](https://raw.github.com/DarrenMowat/fedit/master/web-doc/perror.png)
 
 * Evaluating fib(20)
-![Blackbox](https://raw.github.com/DarrenMowat/fedit/master/doc/eval.png)
+
+![Blackbox](https://raw.github.com/DarrenMowat/fedit/master/web-doc/eval.png)
 
 * Maths standard library
-![Blackbox](https://raw.github.com/DarrenMowat/fedit/master/doc/mathandstuff.png)
+
+![Blackbox](https://raw.github.com/DarrenMowat/fedit/master/web-doc/mathandstuff.png)
 
 
 
