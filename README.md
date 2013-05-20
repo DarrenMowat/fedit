@@ -1,6 +1,9 @@
 
 # Fedit - Text editor for FOUL
 
+CS410 Final Assignment
+Darren Mowat
+200911909
 
 ## Complete (FOUL Language)
 
@@ -18,6 +21,7 @@
 
 ## Complete (FOUL Editor)
 
+* Fixed handleKey bug which loops forever and uses 100% cpu
 * Evaluate the main function of the file on exit
 * Save the file on exit
 

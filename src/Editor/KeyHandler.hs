@@ -1,6 +1,7 @@
 
 module Editor.KeyHandler where
 
+import Editor.ANSIEscapes 
 import Editor.Block
 import Editor.Overlay
 
@@ -61,11 +62,12 @@ activate (i, xs) = inward i (B0, Here, xs) where
    This is how my code figures out what to display and where to put the
    cursor. -}
 
-lineNumGutterSize :: Int
-lineNumGutterSize = 6
-
 whatAndWhere :: TextCursor -> (Layout Box, Point)
-whatAndWhere (czz, cur, css) = (foldr (joinV . layS) layZ strs, (x, y)) where
+whatAndWhere (czz, cur, css) = ((joinH left right), point) where
+  right = foldr (joinV . layS) layZ (map white strs)
+  left = joinH (foldr (joinV . layS) layZ (map blue lns)) (hGap 2)
+  lns = makeLineNumbers $ length strs
+  point = (x + lnLength + 2, y)
   (x, cs) = deactivate cur
   (y, strs) = deactivate (czz, Here, cs : css)
 
@@ -212,6 +214,19 @@ textCursorToText (czz, cur, css) = strs
 
 countLines :: TextCursor -> Int
 countLines t = length $ textCursorToText t
+
+lnLength :: Int 
+lnLength = 4
+
+makeLineNumbers :: Int -> [String]
+makeLineNumbers x = map (trimOrPad . show) [1..x]
+ where 
+  trimOrPad s = case length s > lnLength of 
+    True  -> trim s
+    False -> pad s
+  pad s  = (take (lnLength - length s) (repeat ' ')) ++ s
+  trim s = drop (length s - lnLength) s
+
 
 toFwd :: Bwd a -> [a]
 toFwd B0        = []

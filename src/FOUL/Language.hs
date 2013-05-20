@@ -29,6 +29,7 @@ type CName = String
 data Val = VC CName [Val]  -- a constructor with 0 or more subvalues
   deriving (Eq)
 
+-- This show instance makes values pretty for printing
 instance Show Val where 
   show = prettyPrintVal
 
