@@ -27,5 +27,7 @@ go :: FilePath -> IO ()
 go file = do
   res <- parseToFoulFromFile file
   case res of
-    Left err -> putStrLn $ "ERROR: " ++ err
-    Right prog -> putStrLn $ "\nmain() ->  " ++ (show $ evalMain prog) ++ "\n"
+    Left err -> putStrLn $ "Parser Error: " ++ err
+    Right prog -> case evalMain prog of 
+      Left err -> putStrLn $ "Eval Error: " ++ err
+      Right va -> putStrLn $ "main() -> " ++ show va
