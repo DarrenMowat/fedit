@@ -64,8 +64,8 @@ activate (i, xs) = inward i (B0, Here, xs) where
 
 whatAndWhere :: TextCursor -> (Layout Box, Point)
 whatAndWhere (czz, cur, css) = ((joinH left right), point) where
-  right = foldr (joinV . layS) layZ (map white strs)
-  left = joinH (foldr (joinV . layS) layZ (map blue lns)) (hGap 2)
+  right = foldr (joinV . layS) layZ strs
+  left = joinH (foldr (joinV . layS) layZ lns) (hGap 2)
   lns = makeLineNumbers $ length strs
   point = (x + lnLength + 2, y)
   (x, cs) = deactivate cur
