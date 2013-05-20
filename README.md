@@ -62,3 +62,21 @@ It utilises the standard library modules, comments and the use of integers as ex
 There are also some test files designed to test the standard library functions in tests/FOUL/*.
 
 The standard library modules are defined in std/*. These show an example of using integers as pattern variables
+
+## Screenshots
+
+* Parse Error
+![ParseError](https://raw.github.com/DarrenMowat/fedit/master/web-doc/perror.png)
+
+* Evaluating fib(20)
+![Blackbox](https://raw.github.com/DarrenMowat/fedit/master/doc/eval.png)
+
+* Maths standard library
+![Blackbox](https://raw.github.com/DarrenMowat/fedit/master/doc/mathandstuff.png)
+
+
+
+
+
+
+
