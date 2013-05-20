@@ -44,7 +44,7 @@ insertValues (x:xs) ((v, e):vs) = case x == v of
     getVal (Right val) = show val
 
 --             File        BufferContents      New Buffer
-runBlackbox :: FilePath -> String -> IO String
+runBlackbox :: FilePath -> String -> IO (String, String)
 runBlackbox file buffer = do 
   let (dir, name) = splitPath file
   -- We copy to a new temp directory so we don't break the 
@@ -58,10 +58,10 @@ runBlackbox file buffer = do
   case prog of 
   	Left err -> do 
   		removeDirectoryRecursive twd
-  		return $ "-- Error parsing program \n" ++ buffer
+  		return (err, buffer)
   	Right prog -> do 
   		let nbuffer = insertValues (lines buffer) (map (evalProgExpr prog) els)
-  		return $ unlines nbuffer
+  		return ("Parsed Successfully", unlines nbuffer)
 
 evalProgExpr :: Prog -> (String, Either String Expr) -> (String, Either String Val)
 evalProgExpr prog (s, Left e)  = (s, Left e)

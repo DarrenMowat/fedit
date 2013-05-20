@@ -61,7 +61,7 @@ type ScreenState = (Point, Size)
 
 onScreen :: Point -> ScreenState -> ScreenState
 onScreen (cx, cy) ((px, py), s@(sw, sh))
-  = (( intoRange px cx sw, intoRange py cy sh), (sw, sh - 1))
+  = (( intoRange px cx sw, intoRange py cy (sh - 3)), (sw, sh - 1))
   where
     intoRange i j x
       | i <= j && j <= i + x = i   -- in range, no change
@@ -99,7 +99,7 @@ keyReady = do
       _ -> return $ Nothing
 
 outer :: ScreenState -> EditorContext -> IO ()
-outer ps (EC tc f) = inner ps tc (whatAndWhere tc) LotsChanged
+outer ps (EC tc f stat) = inner ps tc (whatAndWhere tc) LotsChanged
   where
   inner ps@(p, s) tc@(czz, cur, css) lc@(l, c@(cx, cy)) d = do
     refresh
@@ -108,9 +108,10 @@ outer ps (EC tc f) = inner ps tc (whatAndWhere tc) LotsChanged
     let d' = if ps /= ps' then LotsChanged else d
     case d' of
       LotsChanged -> do
-        shout "LOTS CHANGED" clearScreen
+        clearScreen
         resetCursor
         mapM_ putStr $ layout $ cropLay cropBox ps' l
+        putStr ("Build Status: " ++ (filter (/= '\n') stat))
       LineChanged -> do
         resetCursor
         down (cy - py)
@@ -136,9 +137,10 @@ outer ps (EC tc f) = inner ps tc (whatAndWhere tc) LotsChanged
       Just Eval -> do 
         let (x, cs) = deactivate cur
         let (y, strs) = deactivate (czz, Here, cs : css)
-        nb <- runBlackbox (fst f) (unlines strs)
+        (stat, nb) <- runBlackbox (fst f) (unlines strs)
         let (as, (b:bs)) = splitAt (y - 1) $ lines nb
-        inner ps (toBwdList as, (B0, Here, b), bs) (whatAndWhere tc) LotsChanged
+        let textC = (toBwdList as, (B0, Here, b), bs)
+        outer ((0, 0), (-1, -1)) (EC textC f stat)
       Just k -> case handleKey k tc of
         Nothing -> inner ps' tc lc NoChange
         Just (d, tc') -> inner ps' tc' (whatAndWhere tc') d
@@ -172,7 +174,7 @@ main = do
         [] -> ("", [])
         (l : ls) -> (l, ls)
   initscr
-  outer ((0, 0), (-1, -1)) (EC (mkTextCursor l ls) econt)
+  outer ((0, 0), (-1, -1)) (EC (mkTextCursor l ls) econt "")
   return ()
 
 mkTextCursor :: String -> [String] -> TextCursor 

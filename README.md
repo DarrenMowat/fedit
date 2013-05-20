@@ -29,3 +29,6 @@ Darren Mowat
     * -- eval EXPR
     * -- eval add(7, 8)
     * The answer will then be inserted into the comment -- eval add(7, 8) -> 15
+    * Evaluation is triggered by typing Ctrl+e
+* Display parser errors at the bottom of the editor window
+* In line evaluation errors as comments

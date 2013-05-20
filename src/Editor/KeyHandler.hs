@@ -43,7 +43,9 @@ type EditorFile = (FilePath, String)
 
 data Focus = Editor | Command deriving (Eq, Show)
 
-data EditorContext = EC TextCursor EditorFile deriving (Show)
+type BuildStatus = String
+
+data EditorContext = EC TextCursor EditorFile BuildStatus deriving (Show)
 
 {- Useful equipment: deactivate turns a cursor into a list by shuffling
    everything to the right, but it also tells you /numerically/ where the
@@ -225,7 +227,6 @@ makeLineNumbers x = map (trimOrPad . show) [1..x]
     False -> pad s
   pad s  = (take (lnLength - length s) (repeat ' ')) ++ s
   trim s = drop (length s - lnLength) s
-
 
 toFwd :: Bwd a -> [a]
 toFwd B0        = []
