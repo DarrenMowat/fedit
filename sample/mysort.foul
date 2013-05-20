@@ -1,5 +1,11 @@
 
--- Functions that deal with sorting lists of numbers
+-- Sorting Numbers
+
+-- eval mul (49, 49) -> 2401
+
+-- eval main() -> Cons (2, Cons (5, Cons (6, Cons (7, Cons (10, Cons (10, Cons (14, Cons (23, Cons (100, Nil)))))))))
+
+-- eval lte(7, 7) -> T
 
 import std/bool
 import std/math
@@ -34,5 +40,4 @@ main() = sort(Cons(14,
               Cons(6,
               Cons(100,
               Nil))))))))))
-
 

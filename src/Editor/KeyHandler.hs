@@ -11,6 +11,10 @@ import Util.LogUtils
 
 data Bwd x = B0 | Bwd x :< x deriving (Show, Eq)
 
+toBwdList :: [a] -> Bwd a
+toBwdList [] = B0 
+toBwdList bs = toBwdList (init bs) :< (last bs)
+
 {- A slight improvement on the lecture: this is a cursor with x things
    round the outside, and an m in the middle. The idea is that we keep
    everything in exactly the right order, so you can always see what's
@@ -37,7 +41,9 @@ type TextCursor = Cursor String StringCursor
 
 type EditorFile = (FilePath, String)
 
-data EditorContext = EC TextCursor TextCursor EditorFile deriving (Show)
+data Focus = Editor | Command deriving (Eq, Show)
+
+data EditorContext = EC TextCursor EditorFile deriving (Show)
 
 {- Useful equipment: deactivate turns a cursor into a list by shuffling
    everything to the right, but it also tells you /numerically/ where the
@@ -65,11 +71,14 @@ activate (i, xs) = inward i (B0, Here, xs) where
 whatAndWhere :: TextCursor -> (Layout Box, Point)
 whatAndWhere (czz, cur, css) = ((joinH left right), point) where
   right = foldr (joinV . layS) layZ strs
-  left = joinH (foldr (joinV . layS) layZ lns) (hGap 2)
+  left = joinH (foldr (joinV . layS) layZ lns) (hGap horizGap)
   lns = makeLineNumbers $ length strs
-  point = (x + lnLength + 2, y)
+  point = (x + lnLength + horizGap, y) -- Adjust the X Co-ordinate to compensate for line numbers
   (x, cs) = deactivate cur
   (y, strs) = deactivate (czz, Here, cs : css)
+
+horizGap :: Int
+horizGap = 2
 
 {- Next, you'll need some model of keystrokes. Here's a type describing
    some keystrokes. You may want more. -}
@@ -84,6 +93,7 @@ data Key
   | Backspace
   | Delete
   | Quit
+  | Eval
 
 {- Keys come in as standard ANSI escape sequences. You can look 'em up
    online. Feel free to extend escapeKeys so that more keystrokes get
@@ -122,17 +132,6 @@ data Damage
 {- Be creative!                                                           -}
 {--------------------------------------------------------------------------}
 
-{--------------------------------------------------------------------------}
-{- Things Completed                                                       -}
-{-                                                                        -}
-{- Improve Performance in Main.hs - No longer loop constantly til stdin   -}
-{- is ready. Block & wait for it to be ready                              -}
-{- Handle typing                                                          -}
-{- Handle Return                                                          -}
-{- Handle Backspace                                                       -}
-{- Handle Arrow Keys                                                      -}
-{-                                                                        -}
-{--------------------------------------------------------------------------}
 
 handleKey :: Key -> TextCursor -> Maybe (Damage, TextCursor)
 handleKey (ArrowKey mod dir) x =  handleArrowKey (ArrowKey mod dir) x
@@ -145,7 +144,7 @@ handleKey _ x = Just (NoChange, x)
 
 
 {- 
-  Function to handle what happens to a TextCurosr when the backspace is pressed
+  Function to handle what happens to a TextCursor when the backspace is pressed
 
   Done!
 -}

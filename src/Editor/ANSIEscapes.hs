@@ -31,7 +31,10 @@ module Editor.ANSIEscapes
    resetCursor,
    initTermSize) where
 
+import Util.LogUtils
+
 data Dir = UpDir | DownDir | RightDir | LeftDir
+
 
 instance Show Dir where
   show UpDir    = "A"
@@ -68,8 +71,6 @@ red str           = "\ESC[1;31m" ++ str ++ "\ESC[0m"
 green str         = "\ESC[1;32m" ++ str ++ "\ESC[0m"
 purple str        = "\ESC[1;35m" ++ str ++ "\ESC[0m"
 white str         = "\ESC[37m" ++ str ++ "\ESC[0m"
-
-
 
 --Be careful, these assume someone else will reset the background colour
 yellowOnGrey str        = "\ESC[1;33m\ESC[47m" ++ str ++ "\ESC[0m\ESC[47m"

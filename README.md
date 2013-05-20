@@ -5,7 +5,7 @@ CS410 Final Assignment
 Darren Mowat
 200911909
 
-## Complete (FOUL Language)
+## Things added to the FOUL Language
 
 * Rewrote the parser using Parsec. It now output useful error messages & positions to help find errors
 * Rewrote the interpreter to handle errors more gracefully
@@ -19,14 +19,13 @@ Darren Mowat
 * Add basic integer support to the parser. Instead of writing S(S(S(Z))) you can just write 3 (both in patterns and expressions)
 * Pretty Print Values (VC "T" [] -> T, VC "S" [VC "Z" []] -> 1)
 
-## Complete (FOUL Editor)
+## Things added to the editor
 
 * Fixed handleKey bug which loops forever and uses 100% cpu
 * Evaluate the main function of the file on exit
 * Save the file on exit
-
-## Editor TODO
-
-* Implement basic syntax highlighting
-* Error highlighting
-* Interactive evaluation (ghci style)
+* Line Numbers
+* Added a way to evaluate expressions within the files. This is available using the following sytax
+    * -- eval EXPR
+    * -- eval add(7, 8)
+    * The answer will then be inserted into the comment -- eval add(7, 8) -> 15

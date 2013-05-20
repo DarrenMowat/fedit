@@ -1,4 +1,4 @@
-module FOUL.FOUL(parseToFoulFromFile, parseToFoulFromString, evalMain, evalExpr) where
+module FOUL.FOUL(parseToFoulFromFile, evalMain, evalExpr) where
 
 import FOUL.ImportResolver
 import FOUL.Language
@@ -30,10 +30,6 @@ parseToFoulFromFile f = do
       case hasLeft progs of 
         True  -> return $ Left (intercalate ", " (map show (collateLeft progs)))
         False -> return $ checkProgram $ concat (collateRight progs)
-
-parseToFoulFromString :: String -> FilePath -> IO (Either String Prog)
-parseToFoulFromString p f = undefined
-
 
 evalMain :: Prog -> Either String Val
 evalMain prog = evalExpr prog (EA "main" [])

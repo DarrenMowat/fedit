@@ -2,6 +2,7 @@ module Main where
 
 {-# LANGUAGE ForeignFunctionInterface #-}
 
+import Data.List
 import Foreign
 import Foreign.C (CInt(..))
 import System.IO
@@ -12,6 +13,7 @@ import Editor.ANSIEscapes
 import Editor.Block
 import Editor.Overlay
 import Editor.KeyHandler
+import FOUL.Blackbox
 import FOUL.FOUL
 import Util.LogUtils
 
@@ -59,7 +61,7 @@ type ScreenState = (Point, Size)
 
 onScreen :: Point -> ScreenState -> ScreenState
 onScreen (cx, cy) ((px, py), s@(sw, sh))
-  = (( intoRange px cx sw, intoRange py cy sh), s)
+  = (( intoRange px cx sw, intoRange py cy sh), (sw, sh - 1))
   where
     intoRange i j x
       | i <= j && j <= i + x = i   -- in range, no change
@@ -85,8 +87,8 @@ keyReady = do
       '\r' -> return $ Just Return
       '\b' -> return $ Just Backspace
       '\DEL' -> return $ Just Backspace
-      '\ENQ' -> return $ Just Return
       _ | c >= ' ' -> return $ Just (CharKey c)
+      '\ENQ' -> return $ Just Eval -- Eval
       '\ESC' -> do
         b <- hReady stdin
         if not b then return $ Just Quit else do
@@ -97,16 +99,16 @@ keyReady = do
       _ -> return $ Nothing
 
 outer :: ScreenState -> EditorContext -> IO ()
-outer ps (EC tc bc f) = inner ps tc (whatAndWhere tc) LotsChanged
+outer ps (EC tc f) = inner ps tc (whatAndWhere tc) LotsChanged
   where
-  inner ps@(p, s) tc lc@(l, c@(cx, cy)) d = do
-    shout (show d) refresh
+  inner ps@(p, s) tc@(czz, cur, css) lc@(l, c@(cx, cy)) d = do
+    refresh
     s' <- scrSize
     let ps'@((px, py), (sw, _)) = onScreen c (p, s')
     let d' = if ps /= ps' then LotsChanged else d
     case d' of
       LotsChanged -> do
-        clearScreen
+        shout "LOTS CHANGED" clearScreen
         resetCursor
         mapM_ putStr $ layout $ cropLay cropBox ps' l
       LineChanged -> do
@@ -131,6 +133,12 @@ outer ps (EC tc bc f) = inner ps tc (whatAndWhere tc) LotsChanged
             res <- evaluateContents p
             endwin
             putStrLn res
+      Just Eval -> do 
+        let (x, cs) = deactivate cur
+        let (y, strs) = deactivate (czz, Here, cs : css)
+        nb <- runBlackbox (fst f) (unlines strs)
+        let (as, (b:bs)) = splitAt (y - 1) $ lines nb
+        inner ps (toBwdList as, (B0, Here, b), bs) (whatAndWhere tc) LotsChanged
       Just k -> case handleKey k tc of
         Nothing -> inner ps' tc lc NoChange
         Just (d, tc') -> inner ps' tc' (whatAndWhere tc') d
@@ -164,11 +172,8 @@ main = do
         [] -> ("", [])
         (l : ls) -> (l, ls)
   initscr
-  outer ((0, 0), (-1, -1)) (EC (mkTextCursor l ls) emptyTextCursor econt)
+  outer ((0, 0), (-1, -1)) (EC (mkTextCursor l ls) econt)
   return ()
 
 mkTextCursor :: String -> [String] -> TextCursor 
 mkTextCursor s ss = (B0, (B0, Here, s), ss)
-
-emptyTextCursor :: TextCursor
-emptyTextCursor = (B0, (B0, Here, ""), [])

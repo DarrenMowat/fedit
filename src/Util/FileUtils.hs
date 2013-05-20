@@ -38,7 +38,7 @@ copyDirRecursive src dst = do
     isDirectory <- doesDirectoryExist path
     -- Who knows what crazy stuff the developer has in their directory (binarys, images, etc)
     -- Just copy hs files to deal with this
-    let isHsFile = (takeExtension path) == ".hs" 
+    let isHsFile = (takeExtension path) == ".foul" 
     if isDirectory
       then copyDirRecursive path (dst </> name)
       else if isHsFile 
