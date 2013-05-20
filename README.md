@@ -32,3 +32,23 @@ Darren Mowat
     * Evaluation is triggered by typing Ctrl+e
 * Display parser errors at the bottom of the editor window
 * In line evaluation errors as comments
+
+## Installation
+
+FOUL & Fedit are packed using Cabal as they have some external dependencies that would be hard to manage with MakeFiles.
+Cabal will build 2 seperate binarys when run
+    * foul - FOUL parser and evaluator
+    * fedit - Foul EDITor 
+
+Get a copy of this repository either by 
+
+    git clone https://github.com/DarrenMowat/fedit.git
+    
+Or by downloading it as a zip file from https://github.com/DarrenMowat/fedit/archive/master.zip
+
+    cd fedit
+    cabal configure
+    cabal install
+   
+The fedit & foul binaries should now be available on your PATH somewhere 
+
