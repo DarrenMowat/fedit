@@ -1,13 +1,9 @@
 name:                fedit
 version:             0.1.0.0
--- synopsis:            
--- description:         
--- license:             
-license-file:        LICENSE
+synopsis:            Text editor for FOUL. CS410 Final Assignment project
+license:             PublicDomain
 author:              Darren Mowat
-maintainer:          darren.mowat@strath.ac.uk
--- copyright:           
--- category:            
+maintainer:          darren.mowat@strath.ac.uk         
 build-type:          Simple
 cabal-version:       >=1.8
 -- Standard Library Files
