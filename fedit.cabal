@@ -16,7 +16,7 @@ executable fedit
   extra-libraries:   ncurses
   main-is:           Main.hs
   hs-source-dirs:    src            
-  build-depends:     base ==4.5.*,
+  build-depends:     base ==4.*,
                      filepath >= 1 && < 2,
                      directory ==1.2.*,
                      parsec ==3.1.*,
